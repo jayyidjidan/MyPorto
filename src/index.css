@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+}
+
+body {
+  background: var(--color-white-1);
+}
+@theme {
+  --color-grey-100: #ECECEC;
+  --color-grey-400: #6B6B6B;
+  --color-grey-450: rgba(177, 177, 177, 0.70);
+  --color-black-400: #111111;
+  --color-white-1: #FDFDFD;
+  --color-white-2: #FFFFFF;
+
+  /* color for button */
+  --color-gray-1: rgba(177, 177, 177, 0.70);
+  --color-border-default: #1F1F1F;
+  --color-border-hover: rgba(255, 255, 255, 0.50);
+  --color-pressed-primary: #535353;
+  --color-pressed-secondary: #CACACA;
+}
+
+@utility bg-grey-gradient {
+  background: linear-gradient(99deg, #EDEDED 0.71%, #E1E1E1 91.39%);
+}
+@utility bg-black-gradient-1 {
+  background: linear-gradient(96deg, #111 1.87%, #777 98.13%);
+}
+@utility bg-black-gradient-2 {
+  background: linear-gradient(96deg, #111 15.93%, #515151 134%);
+}
+
+@utility shadow-btn-inset {
+  box-shadow: 0 0 6px 3px #000 inset;
+}
+
+@utility shadow-btn-inset-light {
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.25) inset;
+}
+
+@utility text-display-1 {
+  color: #111;
+  text-align: center;
+  font-family: "Plus Jakarta Sans";
+  font-size: 84px;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: -3.36px;
+
+  @media (min-width: 1024px) {
+    font-size: 140px;
+    letter-spacing: -5.6px;
+  }
+}
+
+@utility text-h1 {
+  text-align: center;
+  font-family: "Plus Jakarta Sans";
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: -1.6px;
+
+  @media (min-width: 1024px) {
+    font-size: 56px;
+    letter-spacing: -2.24px;
+  }
+}
+
+@utility text-h2 {
+  font-family: "Plus Jakarta Sans";
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.64px;
+
+  @media (min-width: 1024px) {
+    font-size: 48px;
+    letter-spacing: -0.96px;
+  }
+}
+
+@utility text-h3 {
+  font-family: "Plus Jakarta Sans";
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: -0.48px;
+
+  @media (min-width: 1024px) {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.64px;
+  }
+}
+
+@utility text-h4 {
+  font-family: "Plus Jakarta Sans";
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: -0.36px;
+
+  @media (min-width: 1024px) {
+    font-size: 24px;
+    letter-spacing: -0.48px;
+  }
+}
+
+@utility text-h5 {
+  font-family: "Plus Jakarta Sans";
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: -0.32px;
+
+  @media (min-width: 1024px) {
+    font-size: 18px;
+    letter-spacing: -0.36px;
+  }
+}
+
+@utility text-body {
+  font-family: "Plus Jakarta Sans";
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: -0.28px;
+
+  @media (min-width: 1024px) {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+
