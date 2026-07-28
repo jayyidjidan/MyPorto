@@ -7,6 +7,7 @@
 body {
   background: var(--color-white-1);
 }
+
 @theme {
   --color-grey-100: #ECECEC;
   --color-grey-400: #6B6B6B;
@@ -21,6 +22,13 @@ body {
   --color-border-hover: rgba(255, 255, 255, 0.50);
   --color-pressed-primary: #535353;
   --color-pressed-secondary: #CACACA;
+}
+
+@utility text-gradient-black-1 {
+  background: linear-gradient(96deg, #111 1.87%, #777 98.13%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @utility bg-grey-gradient {
