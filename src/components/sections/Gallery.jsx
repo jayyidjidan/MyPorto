@@ -7,7 +7,7 @@ export default function Gallery() {
       <div className="flex w-full flex-col items-center justify-center gap-6">
         <div className="flex flex-col items-center justify-center gap-1">
           <p className="text-body text-black-400/50">Gallery</p>
-          <h1 className="w-100 lg-[424px] text-h1 text-gradient-black-1">Gallery From My Project</h1>
+          <h1 className="w-[250px] lg:w-[350px] text-h1 text-gradient-black-1">Gallery From My Project</h1>
         </div>
 
         <Button variant="primary">See All</Button>
