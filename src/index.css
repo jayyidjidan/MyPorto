@@ -31,6 +31,13 @@ body {
   color: transparent;
 }
 
+@utility text-gradient-white-1{
+  background: linear-gradient(96deg, #FFF 1.87%, #777 98.13%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @utility bg-grey-gradient {
   background: linear-gradient(99deg, #EDEDED 0.71%, #E1E1E1 91.39%);
 }
@@ -39,6 +46,10 @@ body {
 }
 @utility bg-black-gradient-2 {
   background: linear-gradient(96deg, #111 15.93%, #515151 134%);
+}
+
+@utility bg-white-gradient {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%);
 }
 
 @utility shadow-btn-inset {
