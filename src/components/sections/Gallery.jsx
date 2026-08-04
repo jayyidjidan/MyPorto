@@ -2,7 +2,7 @@ import Button from "../common/Button";
 
 export default function Gallery() {
   return (
-    <section className="flex min-h-screen w-full flex-col items-center justify-start gap-8 lg:gap-18 px-4 py-12 lg:py-30 lg:px-12">
+    <section id="gallery" className="flex min-h-screen w-full flex-col items-center justify-start gap-8 lg:gap-18 px-4 py-12 lg:py-30 lg:px-12">
 
       <div className="flex w-full flex-col items-center justify-center gap-6">
         <div className="flex flex-col items-center justify-center gap-1">

@@ -2,7 +2,7 @@ import Button from "../common/Button";
 
 export default function Hero() {
   return (
-    <section className="flex min-h-screen w-full flex-col items-center justify-center gap-8 px-6 lg:flex-row lg:justify-between lg:gap-0 lg:px-12">
+    <section id="home" className="flex min-h-screen w-full flex-col items-center justify-center gap-8 px-6 lg:flex-row lg:justify-between lg:gap-0 lg:px-12">
       {/* photo — always centered on the section, shrinks on mobile */}
       
 

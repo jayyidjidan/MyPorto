@@ -9,8 +9,11 @@ export default function ProjectHero(){
                     <h1 className="text-h1 text-black-400">Project Title</h1>
                     <h4 className="text-h5 text-black-400/50">this text is only for project description</h4>
                 </div>
-
-                <Button variant="primary">See Preview</Button>
+                
+                <div className="flex gap-2">
+                    <Button variant="secondary">See Source</Button>
+                    <Button variant="primary">See Preview</Button>
+                </div>
             </div>
 
             <div className="flex w-full h-[500px] lg:h-[600px] items-center justify-center gap-4">
