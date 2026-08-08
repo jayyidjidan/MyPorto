@@ -31,7 +31,7 @@ export default function Hero() {
         </h4>
 
         <p className="w-full text-body text-black-400/50 lg:order-3 lg:w-[460px] lg:text-right">
-          Graduated from Brawijaya University, currently specializing in
+          Hi Iam Jayyid Jidan, Currenlty Graduated from Brawijaya University, currently specializing in
           UI/UX and Fullstack Development, and pursuing studies to become a
           future AI Engineer.
         </p>
