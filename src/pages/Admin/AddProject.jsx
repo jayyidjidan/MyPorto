@@ -5,7 +5,7 @@ import FormHero from "../../components/sections/project-form/FormHero";
 import ProjectHeroOverview from "../../components/sections/project-form/ProjectHeroOverview";
 import ProjectProblem from "../../components/sections/project-form/ProjectProblem";
 import ProjectProcess from "../../components/sections/project-form/ProjectProcess";
-import Projectresult from "../../components/sections/project-form/Projectresult";
+import Projectresult from "../../components/sections/project-form/ProjectResult";
 import ProjectGallery from "../../components/sections/project-form/ProjectGallery";
 import ProjectTech from "../../components/sections/project-form/ProjectTech";
 import Button from "../../components/common/Button";
