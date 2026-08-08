@@ -3,8 +3,8 @@ import Navbar from "../layout/Navbar";
 
 export default function Footer() {
   return (
-    <section className="flex w-full min-h-screen justify-between flex-col items-center  gap-18 px-4 py-8 lg:py-12 lg:py-8 lg:px-12 bg-black-400 rounded-t-4xl lg:rounded-t-[72px]">
-        <div className="flex flex-col lg:flex-row justify-between items-center   w-full">
+    <section className="flex w-full min-h-screen justify-between flex-col items-center  gap-18 px-4 py-16 lg:py-12 lg:py-8 lg:px-12 bg-black-400 rounded-t-4xl lg:rounded-t-[72px]">
+        <div className="flex flex-col lg:flex-row justify-between items-center   gap-8 lg:gap-0 w-full">
             <h4 className="text-h4 text-center lg:text-left text-white-1 w-[300px] lg:w-[373px]">Developed the Visioner product to enhance human interaction.</h4>
             <div className="flex items-start gap-4">
                <a href="https://dribbble.com/jayyidjidan" className="flex justify-center items-center bg-white-1 p-3 rounded-full">

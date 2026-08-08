@@ -55,7 +55,7 @@ export default function Contact() {
             </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-start w-full gap-8">
+      <form onSubmit={handleSubmit} className="flex flex-col items-start w-full gap-8">
 
         <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-6 w-full">
             <div className="flex flex-col flex-1 items-start gap-8 w-full">
@@ -102,7 +102,7 @@ export default function Contact() {
 
         {status === "success" && <p className="text-body text-green-600">Message sent — thanks!</p>}
         {status === "error" && <p className="text-body text-red-500">Something went wrong. Please try again.</p>}
-        </form>
+      </form>
 
 
     </section>
