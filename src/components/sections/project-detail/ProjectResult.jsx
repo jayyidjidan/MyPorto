@@ -29,7 +29,7 @@ export default function ProjectResult({ project }) {
               `}
             >
               <h2 className="text-h2 text-black-400">{result.title}</h2>
-              <h5 className="text-h5 text-black-400/50 w-full">{result.description}</h5>
+              <h5 className="text-h5 text-black-400/50 w-full break-words whitespace-normal">{result.description}</h5>
             </button>
           ))}
         </div>

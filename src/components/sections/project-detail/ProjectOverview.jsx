@@ -8,7 +8,7 @@ export default function ProjectOverview({ project }) {
     <section className="flex flex-col lg:flex-row w-full items-start gap-12 lg:gap-14 px-4 py-12 lg:py-12 lg:px-32">
       <div className="flex flex-col gap-6 items-start w-full">
         <h3 className="text-h2 text-black-400">Overview</h3>
-        <h5 className="text-h5 text-black-400/50 w-full lg:w-[536px]">
+        <h5 className="text-h5 text-black-400/50 w-full lg:w-[536px] break-words whitespace-normal">
           {overview.description}
         </h5>
       </div>
