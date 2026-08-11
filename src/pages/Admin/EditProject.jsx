@@ -222,7 +222,7 @@ export default function EditProject() {
           setFormData={setFormData}
         />
 
-        <Projectresult
+        <ProjectResult
           formData={formData}
           setFormData={setFormData}
           handleChange={handleChange}
