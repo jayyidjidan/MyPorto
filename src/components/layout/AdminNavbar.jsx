@@ -12,7 +12,7 @@ export default function AdminNavbar() {
             <div className="flex items-center justify-between gap-30 bg-white-1 px-12 py-8 rounded-b-3xl">
                 <h4 className="text-h4 text-black-400">2:10 AM</h4>
                 <Button variant="secondary" className="flex-nowrap">
-                  <a href="../sections/Hero">Home</a>
+                  <a href="https://jayyidjidanporto.vercel.app/">Home</a>
                 </Button>
             </div>
         </nav>
