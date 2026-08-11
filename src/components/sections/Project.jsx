@@ -25,7 +25,7 @@ export default function Project() {
       <div className="flex w-full flex-col items-center justify-center gap-6">
         <div className="flex flex-col items-center justify-center gap-1">
           <p className="text-body text-black-400/50">Project</p>
-          <h1 className="w-100 lg-[424px] text-h1 text-gradient-black-1">
+          <h1 className="w[100px] lg-[424px] text-h1 text-gradient-black-1">
             See My Newest Project Case
           </h1>
         </div>
