@@ -49,9 +49,7 @@ export default function Project() {
       {/* Header */}
       <div
         className={`flex w-full flex-col items-center justify-center gap-6 ${
-          isVisible
-            ? "animate-fade-up"
-            : "animate-hidden"
+          isVisible ? "animate-fade-up" : "animate-hidden"
         }`}
       >
         <div className="flex flex-col items-center justify-center gap-1">
@@ -59,19 +57,10 @@ export default function Project() {
             Project
           </p>
 
-          <h1 className="text-h1 text-gradient-black-1 lg:w-[424px]">
+          <h1 className="text-center text-h1 text-gradient-black-1 lg:w-[424px]">
             See My Newest Project Case
           </h1>
         </div>
-
-        {hasMore && !showAll && (
-          <button
-            onClick={() => setShowAll(true)}
-            className="text-body text-black-400/60 underline underline-offset-4 transition-colors duration-200 hover:text-black-400"
-          >
-            See More Projects
-          </button>
-        )}
       </div>
 
       {/* Content */}
@@ -88,50 +77,63 @@ export default function Project() {
           </p>
         </div>
       ) : (
-        <div
-          className={
-            showAll && projects.length > 3
-              ? "flex w-full max-w-[1700px] flex-wrap items-start justify-center gap-12"
-              : "flex w-full max-w-[1700px] flex-col items-center gap-6 lg:h-[660px] lg:flex-row lg:justify-between lg:gap-14"
-          }
-        >
-          {displayed.map((project, i) => (
-            <div
-              key={project._id}
-              className={
-                showAll && projects.length > 3
-                  ? `flex ${
-                      isVisible
-                        ? "animate-fade-up"
-                        : "animate-hidden"
-                    }`
-                  : `flex w-full flex-col items-center gap-6 lg:h-full lg:flex-1 lg:flex-row lg:gap-14 ${
-                      isVisible
-                        ? "animate-fade-up"
-                        : "animate-hidden"
-                    }`
-              }
-              style={{
-                animationDelay: `${200 + i * 150}ms`,
-              }}
-            >
-              {/* Divider */}
-              {!showAll && i > 0 && (
-                <div className="h-[1px] w-full flex-shrink-0 bg-black-400/10 lg:h-full lg:w-[1px]" />
-              )}
+        <>
+          {/* Project Grid */}
+          <div
+            className="
+              grid
+              w-full
+              max-w-[1700px]
+              grid-cols-1
+              gap-8
+              md:grid-cols-2
+              lg:grid-cols-3
+              lg:gap-14
+            "
+          >
+            {displayed.map((project, i) => (
+              <div
+                key={project._id}
+                className={`w-full ${
+                  isVisible
+                    ? "animate-fade-up"
+                    : "animate-hidden"
+                }`}
+                style={{
+                  animationDelay: `${200 + i * 150}ms`,
+                }}
+              >
+                <ProjectCard
+                  title={project.hero?.title}
+                  description={project.overview?.description}
+                  tags={(project.overview?.categories || []).map(
+                    (c) => `#${c}`
+                  )}
+                  image={getImageUrl(project.hero?.coverImage)}
+                  href={`/projects/${project.slug}`}
+                />
+              </div>
+            ))}
+          </div>
 
-              <ProjectCard
-                title={project.hero?.title}
-                description={project.overview?.description}
-                tags={(project.overview?.categories || []).map(
-                  (c) => `#${c}`
-                )}
-                image={getImageUrl(project.hero?.coverImage)}
-                href={`/projects/${project.slug}`}
-              />
-            </div>
-          ))}
-        </div>
+          {/* See More Button */}
+          {hasMore && !showAll && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="
+                text-body
+                text-black-400/60
+                underline
+                underline-offset-4
+                transition-colors
+                duration-200
+                hover:text-black-400
+              "
+            >
+              See More Projects
+            </button>
+          )}
+        </>
       )}
     </section>
   );
