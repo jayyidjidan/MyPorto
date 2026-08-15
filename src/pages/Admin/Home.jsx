@@ -79,6 +79,7 @@ export default function AdminHome() {
             <ProjectCard
               key={project._id}
               id={project._id}
+              project={project}
               title={project.hero?.title}
               createdAt={formatDate(project.createdAt)}
               thumbnail={project.hero?.coverImage}

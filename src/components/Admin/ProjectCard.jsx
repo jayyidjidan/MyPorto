@@ -1,8 +1,10 @@
 import Button from "../common/Button";
 import { getImageUrl } from "../../api/projects";
+import { generateProjectPDF } from "../../utils/generateProjectPDF";
 
 export default function ProjectCard({
   id,
+  project,
   title,
   createdAt,
   thumbnail,
@@ -12,6 +14,12 @@ export default function ProjectCard({
   const handleDelete = () => {
     if (window.confirm(`Delete "${title}"? This cannot be undone.`)) {
       onDelete(id);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (project) {
+      generateProjectPDF(project);
     }
   };
 
@@ -26,6 +34,9 @@ export default function ProjectCard({
         }}
       >
         <div className="flex h-full w-full items-start justify-end gap-2 p-6">
+          <Button variant="secondary" onClick={handleDownloadPDF}>
+            PDF
+          </Button>
           <Button variant="secondary" onClick={handleDelete}>
             Delete
           </Button>
