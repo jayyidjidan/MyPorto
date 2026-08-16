@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import ProjectDetail from "./pages/ProjectDetail";
 import AdminHome from "./pages/Admin/Home";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import AddProject from "./pages/Admin/AddProject";
 import EditProject from "./pages/Admin/EditProject";
 
@@ -19,6 +20,7 @@ function App() {
       </Routes>
 
       <Analytics />
+      <SpeedInsights/>
     </>
   );
 }
