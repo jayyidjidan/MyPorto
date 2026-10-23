@@ -48,7 +48,6 @@ export default function ProjectDetail() {
       <ProjectTech project={project} />
       <ProjectResult project={project} />
       <ProjectGallery project={project} />
-      <Footer />
     </>
   );
 }
