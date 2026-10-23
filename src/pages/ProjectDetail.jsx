@@ -9,6 +9,7 @@ import ProjectProcess from "../components/sections/project-detail/ProjectProcess
 import ProjectTech from "../components/sections/project-detail/ProjectTech";
 import ProjectResult from "../components/sections/project-detail/ProjectResult";
 import ProjectGallery from "../components/sections/project-detail/ProjectGallery";
+import Footer from "../components/sections/Footer";
 
 export default function ProjectDetail() {
   const { slug } = useParams();
@@ -48,6 +49,7 @@ export default function ProjectDetail() {
       <ProjectTech project={project} />
       <ProjectResult project={project} />
       <ProjectGallery project={project} />
+      <Footer />
     </>
   );
 }
