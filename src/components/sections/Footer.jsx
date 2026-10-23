@@ -16,6 +16,9 @@ export default function Footer() {
                <a href="https://github.com/jayyidjidan" className="flex justify-center items-center bg-white-1 p-3 rounded-full">
                     <img src="/assets/Github.png"  className="w-6 h-6" alt="" />
                </a>
+               <a href="https://www.behance.net/jayyidjidan1" className="flex justify-center items-center bg-white-1 p-3 rounded-full">
+                    <img src="/assets/Behance.png"  className="w-6 h-6" alt="" />
+               </a>
             </div>
         </div>
         <div className="flex justify-center items-center gap-2.5 w-full">

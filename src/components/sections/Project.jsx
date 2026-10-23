@@ -105,7 +105,6 @@ export default function Project() {
               >
                 <ProjectCard
                   title={project.hero?.title}
-                  description={project.overview?.description}
                   tags={(project.overview?.categories || []).map(
                     (c) => `#${c}`
                   )}
