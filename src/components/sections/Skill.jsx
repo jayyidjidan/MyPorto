@@ -70,21 +70,25 @@ export default function Skill() {
             <h4 className="text-h4">1</h4>
 
             <h1 className="text-h1">
-              Fullstack Dev
+              Frontend
             </h1>
           </div>
 
           <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
             <Chip variant="medium">
-              Frontend
+              React
             </Chip>
 
             <Chip variant="medium">
-              Backend
+              JavaScript
             </Chip>
 
             <Chip variant="medium">
-              Database
+              HTML/CSS
+            </Chip>
+
+            <Chip variant="medium">
+              TailwindCSS
             </Chip>
           </div>
         </AnimatedItem>
@@ -99,21 +103,25 @@ export default function Skill() {
             <h4 className="text-h4">2</h4>
 
             <h1 className="text-h1">
-              AI Development
+              Backend
             </h1>
           </div>
 
           <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
             <Chip variant="medium">
-              Chatbot
+              Laravel
             </Chip>
 
             <Chip variant="medium">
-              Automation
+              Expressjs
             </Chip>
 
             <Chip variant="medium">
-              Generative_AI
+              Nodejs
+            </Chip>
+
+            <Chip variant="medium">
+              Python
             </Chip>
           </div>
         </AnimatedItem>
@@ -128,21 +136,49 @@ export default function Skill() {
             <h4 className="text-h4">3</h4>
 
             <h1 className="text-h1">
-              UI/UX Designer
+              UI Design
             </h1>
           </div>
 
           <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
             <Chip variant="medium">
-              UX_Research
+              Design System
             </Chip>
 
             <Chip variant="medium">
-              UI_Design
+              Figma
             </Chip>
 
             <Chip variant="medium">
-              Prototyping
+              Micro Interaction
+            </Chip>
+          </div>
+        </AnimatedItem>
+
+        {/* Skill 4 */}
+        <AnimatedItem
+          className="flex w-full flex-col items-end justify-between gap-6 self-stretch py-12 lg:flex-row lg:items-center lg:gap-0"
+          delay={0}
+        >
+          <div className="flex w-full items-start gap-4">
+            <h4 className="text-h4">4</h4>
+
+            <h1 className="text-h1">
+              UX Research
+            </h1>
+          </div>
+
+          <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
+            <Chip variant="medium">
+              User Research
+            </Chip>
+
+            <Chip variant="medium">
+              Usability Testing
+            </Chip>
+
+            <Chip variant="medium">
+              Wireframing
             </Chip>
           </div>
         </AnimatedItem>
