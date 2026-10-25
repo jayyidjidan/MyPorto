@@ -2,19 +2,80 @@ import { useState, useEffect, useRef } from "react";
 import { getProjects, getImageUrl } from "../../api/projects";
 import ProjectCard from "../common/ProjectCard";
 
+const CACHE_KEY = "projects-cache-v1";
+
+function readCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // storage penuh / diblokir: abaikan
+  }
+}
+
+// Minta versi gambar yang lebih kecil & modern kalau hostingnya Cloudinary.
+// URL lain dikembalikan apa adanya.
+function optimizeImage(url, width = 800) {
+  if (!url) return url;
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
+    return url;
+  }
+  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+}
+
+function ProjectSkeleton() {
+  return (
+    <div className="flex w-full animate-pulse flex-col gap-4" aria-hidden="true">
+      <div className="h-10 w-3/4 rounded-xl bg-black-400/10" />
+      <div className="flex gap-2">
+        <div className="h-8 w-20 rounded-full bg-black-400/10" />
+        <div className="h-8 w-24 rounded-full bg-black-400/10" />
+        <div className="h-8 w-16 rounded-full bg-black-400/10" />
+      </div>
+      <div className="aspect-[4/3] w-full rounded-3xl bg-black-400/10" />
+    </div>
+  );
+}
+
 export default function Project() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(readCache);
   const [showAll, setShowAll] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(projects.length === 0);
+  const [error, setError] = useState(false);
 
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     getProjects()
-      .then((data) => setProjects(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (cancelled) return;
+        setProjects(data);
+        writeCache(data);
+        setError(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -25,9 +86,7 @@ export default function Project() {
           observer.disconnect();
         }
       },
-      {
-        threshold: 0.15,
-      }
+      { threshold: 0.15 }
     );
 
     if (sectionRef.current) {
@@ -53,27 +112,27 @@ export default function Project() {
         }`}
       >
         <div className="flex flex-col items-center justify-center gap-1">
-          <p className="text-body text-black-400/50">
-            Project
-          </p>
+          <p className="text-body text-black-400/70">Project</p>
 
-          <h1 className="text-center text-h1 text-gradient-black-1 lg:w-[424px]">
+          <h2 className="text-center text-h1 text-gradient-black-1 lg:w-[424px]">
             See My Newest Project Case
-          </h1>
+          </h2>
         </div>
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="flex w-full items-center justify-center py-20">
-          <p className="text-body text-black-400/50">
-            Loading projects…
-          </p>
+        <div className="grid w-full max-w-[1700px] grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-14">
+          <ProjectSkeleton />
+          <ProjectSkeleton />
+          <ProjectSkeleton />
         </div>
       ) : projects.length === 0 ? (
         <div className="flex w-full items-center justify-center py-20">
-          <p className="text-body text-black-400/50">
-            No projects yet.
+          <p className="text-body text-black-400/70">
+            {error
+              ? "Couldn't load projects. Please refresh the page."
+              : "No projects yet."}
           </p>
         </div>
       ) : (
@@ -95,12 +154,10 @@ export default function Project() {
               <div
                 key={project._id}
                 className={`w-full ${
-                  isVisible
-                    ? "animate-fade-up"
-                    : "animate-hidden"
+                  isVisible ? "animate-fade-up" : "animate-hidden"
                 }`}
                 style={{
-                  animationDelay: `${200 + i * 150}ms`,
+                  animationDelay: `${100 + i * 100}ms`,
                 }}
               >
                 <ProjectCard
@@ -108,7 +165,7 @@ export default function Project() {
                   tags={(project.overview?.categories || []).map(
                     (c) => `#${c}`
                   )}
-                  image={getImageUrl(project.hero?.coverImage)}
+                  image={optimizeImage(getImageUrl(project.hero?.coverImage))}
                   href={`/projects/${project.slug}`}
                 />
               </div>
@@ -121,7 +178,7 @@ export default function Project() {
               onClick={() => setShowAll(true)}
               className="
                 text-body
-                text-black-400/60
+                text-black-400/70
                 underline
                 underline-offset-4
                 transition-colors
