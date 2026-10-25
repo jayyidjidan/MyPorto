@@ -52,7 +52,7 @@ export default function Skill() {
           </p>
 
           <h1 className="w-[300px] text-left text-h1 text-gradient-black-1 lg:w-[424px]">
-            See My Newest Project Case
+            My Expertise and Skills
           </h1>
         </div>
       </AnimatedItem>
