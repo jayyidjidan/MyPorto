@@ -17,7 +17,6 @@ export default function ProjectCard({
       <div className="flex flex-col gap-6 w-full">
         <div className="flex flex-col items-start gap-2 w-full">
           <h2 className="text-h2">{title}</h2>
-          <p className="text-body text-black-400/50 w-full break-words whitespace-normal">{description}</p>
         </div>
 
         <div className="flex items-start gap-1">
