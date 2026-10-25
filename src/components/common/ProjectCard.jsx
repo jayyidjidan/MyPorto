@@ -12,7 +12,7 @@ export default function ProjectCard({
   return (
     <Link
       to={href}
-      className="group flex h-full w-full max-w-[397px] flex-col items-start justify-between gap-8 py-8 opacity-50 transition-opacity duration-300 hover:opacity-100 lg:flex-1 lg:gap-0"
+      className="group flex h-full w-full max-w-[397px] flex-col items-start justify-between gap-8 py-8 opacity-50 transition-opacity duration-300 hover:opacity-100 lg:flex-1 lg:gap-12"
     >
       <div className="flex flex-col gap-6 w-full">
         <div className="flex flex-col items-start gap-2 w-full">
