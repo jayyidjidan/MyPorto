@@ -14,12 +14,13 @@ export default function ProjectCard({
       to={href}
       className="group flex h-full w-full max-w-[397px] flex-col items-start justify-between gap-8 py-8 opacity-50 transition-opacity duration-300 hover:opacity-100 lg:flex-1 lg:gap-12"
     >
-      <div className="flex flex-col gap-6 w-full">
-        <div className="flex flex-col items-start gap-2 w-full">
+      <div className="flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col items-start gap-2">
           <h2 className="text-h2">{title}</h2>
         </div>
 
-        <div className="flex items-start gap-1">
+        {/* flex-wrap: chip tidak lagi dipaksa menyusut, jadi teksnya tidak pecah jadi 2 baris */}
+        <div className="flex flex-wrap items-start gap-1 [&>*]:whitespace-nowrap">
           {tags.map((tag) => (
             <Chip key={tag}>{tag}</Chip>
           ))}
