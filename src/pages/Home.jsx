@@ -7,6 +7,7 @@ import Exprience from "../components/sections/Exprience";
 import Gallery from "../components/sections/Gallery";
 import Contact from "../components/sections/Contact";
 import Footer from "../components/sections/Footer";
+import Certif from "../components/sections/Certif";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <About />
       <Project />
       <Skill />
+      <Certif />
       <Exprience />
       <Gallery />
       <Contact />
