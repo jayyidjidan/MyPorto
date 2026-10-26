@@ -7,21 +7,21 @@ const certificates = [
     title: "Katalon Practicioner Level",
     issuer: "Katalon Academy",
     image: "/assets/Katalon.png",
-    credentialUrl: "#",
+    credentialUrl: "https://academy.katalon.com/mcertificate/6ab11ee2d4b48https://academy.katalon.com/mcertificate/6ab11ee2d4b48",
   },
   {
     id: 2,
     title: "Junior Web Developer",
     issuer: "BNSP",
-    image: "/assets/Katalon.png", // ganti dengan gambar sertifikat BNSP
+    image: "/assets/BNSP.jpg", // ganti dengan gambar sertifikat BNSP
     credentialUrl: "#",
   },
   {
     id: 3,
     title: "Frontend Web Development",
     issuer: "Coding Studio",
-    image: "/assets/Katalon.png", // ganti dengan gambar sertifikat Coding Studio
-    credentialUrl: "#",
+    image: "/assets/studio.png", // ganti dengan gambar sertifikat Coding Studio
+    credentialUrl: "https://member.codingstudio.id/certificate/Ms4LS6qZo5",
   },
 ];
 
