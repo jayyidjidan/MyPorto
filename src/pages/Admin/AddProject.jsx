@@ -1,139 +1,93 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import FormHero from "../../components/sections/project-form/FormHero";
-import ProjectHeroOverview from "../../components/sections/project-form/ProjectHeroOverview";
-import ProjectProblem from "../../components/sections/project-form/ProjectProblem";
-import ProjectProcess from "../../components/sections/project-form/ProjectProcess";
-import ProjectResult from "../../components/sections/project-form/ProjectResult";
-import ProjectGallery from "../../components/sections/project-form/ProjectGallery";
-import ProjectTech from "../../components/sections/project-form/ProjectTech";
+import SectionsEditor from "../../components/Admin/SectionsEditor";
 import Button from "../../components/common/Button";
 import { createProject } from "../../api/projects";
 
-const defaultFormData = {
+const input =
+  "w-full rounded-xl border border-grey-100 bg-white px-4 py-2.5 text-sm text-black-400 outline-none transition focus:border-black-400/40 focus:ring-2 focus:ring-black-400/10";
+const label =
+  "block text-xs font-semibold uppercase tracking-wider text-black-400/50 mb-1";
+
+const defaultMeta = {
   title: "",
-  showSource: false,
-  showPreview: false,
-  coverImage: null,
-  previewUrl: "",
-  sourceUrl: "",
-  overview: "",
+  slug: "",
+  category: "",
+  scope: "",   // comma-separated string → split on submit
   duration: "",
-  problem: "",
-  solution: "",
-  image1: null,
-  image2: null,
-  process1: "",
-  process2: "",
-  process3: "",
-  process4: "",
-  process1description: "",
-  process2description: "",
-  process3description: "",
-  process4description: "",
-  process1image: null,
-  process2image: null,
-  process3image: null,
-  process4image: null,
-  technologies: [],
-  result1: "",
-  result2: "",
-  result3: "",
-  result1description: "",
-  result2description: "",
-  result3description: "",
-  result1image: null,
-  result2image: null,
-  result3image: null,
-  gallery1: null,
-  gallery2: null,
-  gallery3: null,
-  gallery4: null,
-  gallery5: null,
-  gallery6: null,
-  gallery7: null,
-  gallery8: null,
-  gallery9: null,
-  categories: [],
 };
 
 export default function AddProject() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(defaultFormData);
+
+  const [meta, setMeta] = useState(defaultMeta);
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const [sections, setSections] = useState([]);
+  const [blockFiles, setBlockFiles] = useState({}); // { fileKey: File }
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleChange = (e) => {
+  const coverRef = useRef();
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
+  const handleMeta = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setMeta((prev) => {
+      const next = { ...prev, [name]: value };
+      // Auto-generate slug from title
+      if (name === "title") {
+        next.slug = value
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "");
+      }
+      return next;
+    });
   };
 
+  const handleCoverFile = (file) => {
+    if (!file) return;
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
+
+  // Called by BlockEditor when a file is selected for a block image
+  const handleBlockFile = (fileKey, file) => {
+    setBlockFiles((prev) => ({ ...prev, [fileKey]: file }));
+  };
+
+  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
 
     try {
-      // Auto-generate slug from title
-      const slug = formData.title
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
-
-      // Build the nested MongoDB document
       const projectData = {
-        slug,
-        hero: {
-          title: formData.title,
-          showSource: formData.showSource,
-          showPreview: formData.showPreview,
-          previewUrl: formData.previewUrl,
-          sourceUrl: formData.sourceUrl,
-          coverImage: "",
-        },
-        overview: {
-          description: formData.overview,
-          duration: formData.duration,
-          categories: formData.categories,
-        },
-        problem: {
-          problem: formData.problem,
-          solution: formData.solution,
-          images: [],
-        },
-        processes: [
-          { title: formData.process1, description: formData.process1description, images: [] },
-          { title: formData.process2, description: formData.process2description, images: [] },
-          { title: formData.process3, description: formData.process3description, images: [] },
-          { title: formData.process4, description: formData.process4description, images: [] },
-        ].filter((p) => p.title.trim()),
-        technologies: formData.technologies,
-        results: [
-          { title: formData.result1, description: formData.result1description, images: [] },
-          { title: formData.result2, description: formData.result2description, images: [] },
-          { title: formData.result3, description: formData.result3description, images: [] },
-        ].filter((r) => r.title.trim()),
-        gallery: [],
+        slug: meta.slug || meta.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+        title: meta.title,
+        category: meta.category,
+        scope: meta.scope
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        duration: meta.duration,
+        coverImage: "",
+        sections: sections.map((s, i) => ({ ...s, order: i })),
       };
 
-      // Build multipart form data
       const fd = new FormData();
       fd.append("projectData", JSON.stringify(projectData));
+      if (coverFile) fd.append("coverImage", coverFile);
 
-      // Image files
-      if (formData.coverImage) fd.append("coverImage", formData.coverImage);
-      if (formData.image1) fd.append("image1", formData.image1);
-      if (formData.image2) fd.append("image2", formData.image2);
-      for (let i = 1; i <= 4; i++) {
-        if (formData[`process${i}image`]) fd.append(`process${i}image`, formData[`process${i}image`]);
-      }
-      for (let i = 1; i <= 3; i++) {
-        if (formData[`result${i}image`]) fd.append(`result${i}image`, formData[`result${i}image`]);
-      }
-      for (let i = 1; i <= 9; i++) {
-        if (formData[`gallery${i}`]) fd.append(`gallery${i}`, formData[`gallery${i}`]);
-      }
+      // Block image files
+      Object.entries(blockFiles).forEach(([key, file]) => {
+        if (file) fd.append(key, file);
+      });
 
       await createProject(fd);
       navigate("/admin");
@@ -149,46 +103,137 @@ export default function AddProject() {
       <FormHero />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-1">
-        <ProjectHeroOverview
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+        {/* ── Fixed metadata ─────────────────────────────────────────────── */}
+        <section className="rounded-3xl bg-white p-10">
+          <h2 className="mb-6 text-lg font-semibold text-black-400">
+            Project Info
+          </h2>
 
-        <ProjectProblem
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+          <div className="grid gap-5 lg:grid-cols-2">
+            {/* Title */}
+            <div className="lg:col-span-2">
+              <label className={label}>Title *</label>
+              <input
+                required
+                name="title"
+                value={meta.title}
+                onChange={handleMeta}
+                placeholder="e.g. Furnitura"
+                className={input}
+              />
+            </div>
 
-        <ProjectProcess
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Slug (auto) */}
+            <div className="lg:col-span-2">
+              <label className={label}>Slug (auto-generated)</label>
+              <input
+                name="slug"
+                value={meta.slug}
+                onChange={handleMeta}
+                placeholder="furnitura"
+                className={`${input} font-mono text-xs`}
+              />
+            </div>
 
-        <ProjectTech
-          formData={formData}
-          setFormData={setFormData}
-        />
+            {/* Category */}
+            <div>
+              <label className={label}>Category</label>
+              <input
+                name="category"
+                value={meta.category}
+                onChange={handleMeta}
+                placeholder="e.g. Mobile App"
+                className={input}
+              />
+            </div>
 
-        <ProjectResult
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Duration */}
+            <div>
+              <label className={label}>Duration</label>
+              <input
+                name="duration"
+                value={meta.duration}
+                onChange={handleMeta}
+                placeholder="e.g. 2 Month"
+                className={input}
+              />
+            </div>
 
-        <ProjectGallery
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Scope */}
+            <div className="lg:col-span-2">
+              <label className={label}>Scope (comma-separated)</label>
+              <input
+                name="scope"
+                value={meta.scope}
+                onChange={handleMeta}
+                placeholder="UX Research, UI Design, Prototype"
+                className={input}
+              />
+              {meta.scope && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {meta.scope
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-grey-100 px-3 py-1 text-xs font-medium text-black-400/70"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                </div>
+              )}
+            </div>
 
-        {/* Submit area */}
-        <div className="flex flex-col items-end gap-4 rounded-3xl bg-white p-12">
-          {error && (
-            <p className="text-body text-red-500">{error}</p>
-          )}
+            {/* Cover image */}
+            <div className="lg:col-span-2">
+              <label className={label}>Cover Image (optional)</label>
+              {coverPreview && (
+                <img
+                  src={coverPreview}
+                  alt="Cover preview"
+                  className="mb-3 h-40 w-full rounded-2xl object-cover"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={coverRef}
+                className="hidden"
+                onChange={(e) => handleCoverFile(e.target.files[0])}
+              />
+              <button
+                type="button"
+                onClick={() => coverRef.current?.click()}
+                className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-3 text-sm text-black-400/60 transition hover:border-black-400/30 hover:text-black-400"
+              >
+                {coverFile ? "Replace cover image" : "Upload cover image"}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Sections ───────────────────────────────────────────────────── */}
+        <section className="rounded-3xl bg-white p-10">
+          <h2 className="mb-2 text-lg font-semibold text-black-400">
+            Content Sections
+          </h2>
+          <p className="mb-6 text-sm text-black-400/50">
+            Add sections and fill them with content blocks (text, images, carousels, grids, buttons).
+          </p>
+
+          <SectionsEditor
+            sections={sections}
+            onChange={setSections}
+            onFile={handleBlockFile}
+          />
+        </section>
+
+        {/* ── Submit ─────────────────────────────────────────────────────── */}
+        <div className="flex flex-col items-end gap-4 rounded-3xl bg-white p-10">
+          {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-4">
             <Button
               type="button"

@@ -80,9 +80,9 @@ export default function AdminHome() {
               key={project._id}
               id={project._id}
               project={project}
-              title={project.hero?.title}
+              title={project.title}
               createdAt={formatDate(project.createdAt)}
-              thumbnail={project.hero?.coverImage}
+              thumbnail={project.coverImage}
               onEdit={(id) => navigate(`/admin/edit-project/${project.slug}`)}
               onDelete={handleDelete}
             />

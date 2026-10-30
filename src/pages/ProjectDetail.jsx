@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getProjectBySlug } from "../api/projects";
 
+import Navbar from "../components/layout/Navbar";
 import ProjectHero from "../components/sections/project-detail/ProjectHero";
-import ProjectOverview from "../components/sections/project-detail/ProjectOverview";
-import ProjectProblem from "../components/sections/project-detail/ProjectProblem";
-import ProjectProcess from "../components/sections/project-detail/ProjectProcess";
-import ProjectTech from "../components/sections/project-detail/ProjectTech";
-import ProjectResult from "../components/sections/project-detail/ProjectResult";
-import ProjectGallery from "../components/sections/project-detail/ProjectGallery";
+import SectionRenderer from "../components/sections/project-detail/SectionRenderer";
 import Footer from "../components/sections/Footer";
 
 export default function ProjectDetail() {
@@ -40,16 +36,41 @@ export default function ProjectDetail() {
     );
   }
 
+  const sections = [...(project.sections || [])].sort(
+    (a, b) => (a.order ?? 0) - (b.order ?? 0)
+  );
+
   return (
-    <>
-      <ProjectHero project={project} />
-      <ProjectOverview project={project} />
-      <ProjectProblem project={project} />
-      <ProjectProcess project={project} />
-      <ProjectTech project={project} />
-      <ProjectResult project={project} />
-      <ProjectGallery project={project} />
+    <div className="min-h-screen bg-white-1">
+      {/* Navbar — centered at top */}
+      <header className="flex w-full justify-center px-4 pt-6 pb-2">
+        <Navbar />
+      </header>
+
+      <main>
+        {/* Dark hero header */}
+        <ProjectHero project={project} />
+
+        {/* Cover image (if set) */}
+        {project.coverImage && (
+          <div className="px-4 pb-6 lg:px-8">
+            <img
+              src={project.coverImage}
+              alt={project.title}
+              className="w-full rounded-3xl object-cover"
+              style={{ maxHeight: "560px" }}
+              loading="lazy"
+            />
+          </div>
+        )}
+
+        {/* Dynamic sections */}
+        {sections.map((section) => (
+          <SectionRenderer key={section.id || section._id} section={section} />
+        ))}
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }

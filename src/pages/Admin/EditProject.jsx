@@ -1,173 +1,99 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import FormHero from "../../components/sections/project-form/FormHero";
-import ProjectHeroOverview from "../../components/sections/project-form/ProjectHeroOverview";
-import ProjectProblem from "../../components/sections/project-form/ProjectProblem";
-import ProjectProcess from "../../components/sections/project-form/ProjectProcess";
-import ProjectResult from "../../components/sections/project-form/ProjectResult";
-import ProjectGallery from "../../components/sections/project-form/ProjectGallery";
-import ProjectTech from "../../components/sections/project-form/ProjectTech";
+import SectionsEditor from "../../components/Admin/SectionsEditor";
 import Button from "../../components/common/Button";
 import { getProjectBySlug, updateProject } from "../../api/projects";
+
+const input =
+  "w-full rounded-xl border border-grey-100 bg-white px-4 py-2.5 text-sm text-black-400 outline-none transition focus:border-black-400/40 focus:ring-2 focus:ring-black-400/10";
+const label =
+  "block text-xs font-semibold uppercase tracking-wider text-black-400/50 mb-1";
 
 export default function EditProject() {
   const navigate = useNavigate();
   const { slug } = useParams();
 
   const [projectId, setProjectId] = useState(null);
-  const [formData, setFormData] = useState(null);
+  const [meta, setMeta] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const [sections, setSections] = useState([]);
+  const [blockFiles, setBlockFiles] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // ── Load existing project and pre-fill the form ──────────────
+  const coverRef = useRef();
+
+  // ── Load existing project ────────────────────────────────────────────────────
   useEffect(() => {
     getProjectBySlug(slug)
       .then((project) => {
         setProjectId(project._id);
-
-        const p = project.processes || [];
-        const r = project.results || [];
-
-        setFormData({
-          // Hero
-          title: project.hero?.title || "",
-          showSource: project.hero?.showSource || false,
-          showPreview: project.hero?.showPreview || false,
-          coverImage: null, // can't pre-fill file input; existing URL preserved via existingCoverImage
-          existingCoverImage: project.hero?.coverImage || "",
-          previewUrl: project.hero?.previewUrl || "",
-          sourceUrl: project.hero?.sourceUrl || "",
-
-          // Overview
-          overview: project.overview?.description || "",
-          duration: project.overview?.duration || "",
-          categories: project.overview?.categories || [],
-
-          // Problem
-          problem: project.problem?.problem || "",
-          solution: project.problem?.solution || "",
-          image1: null,
-          image2: null,
-          existingImage1: project.problem?.images?.[0] || "",
-          existingImage2: project.problem?.images?.[1] || "",
-
-          // Processes (up to 4)
-          process1: p[0]?.title || "",
-          process1description: p[0]?.description || "",
-          process1image: null,
-          existingProcess1image: p[0]?.images?.[0] || "",
-
-          process2: p[1]?.title || "",
-          process2description: p[1]?.description || "",
-          process2image: null,
-          existingProcess2image: p[1]?.images?.[0] || "",
-
-          process3: p[2]?.title || "",
-          process3description: p[2]?.description || "",
-          process3image: null,
-          existingProcess3image: p[2]?.images?.[0] || "",
-
-          process4: p[3]?.title || "",
-          process4description: p[3]?.description || "",
-          process4image: null,
-          existingProcess4image: p[3]?.images?.[0] || "",
-
-          // Technologies
-          technologies: project.technologies || [],
-
-          // Results (up to 3)
-          result1: r[0]?.title || "",
-          result1description: r[0]?.description || "",
-          result1image: null,
-          existingResult1image: r[0]?.images?.[0] || "",
-
-          result2: r[1]?.title || "",
-          result2description: r[1]?.description || "",
-          result2image: null,
-          existingResult2image: r[1]?.images?.[0] || "",
-
-          result3: r[2]?.title || "",
-          result3description: r[2]?.description || "",
-          result3image: null,
-          existingResult3image: r[2]?.images?.[0] || "",
-
-          // Gallery
-          gallery1: null, gallery2: null, gallery3: null,
-          gallery4: null, gallery5: null, gallery6: null,
-          gallery7: null, gallery8: null, gallery9: null,
-          existingGallery: project.gallery || [],
+        setMeta({
+          title: project.title || "",
+          slug: project.slug || "",
+          category: project.category || "",
+          scope: (project.scope || []).join(", "),
+          duration: project.duration || "",
+          existingCoverImage: project.coverImage || "",
         });
+        setCoverPreview(project.coverImage || "");
+        setSections(
+          [...(project.sections || [])].sort(
+            (a, b) => (a.order ?? 0) - (b.order ?? 0)
+          )
+        );
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const handleChange = (e) => {
+  // ── Handlers ─────────────────────────────────────────────────────────────────
+  const handleMeta = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setMeta((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleCoverFile = (file) => {
+    if (!file) return;
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
+
+  const handleBlockFile = (fileKey, file) => {
+    setBlockFiles((prev) => ({ ...prev, [fileKey]: file }));
+  };
+
+  // ── Submit ────────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
 
     try {
-      // Build nested MongoDB document — use existing image URLs where no new file is selected
       const projectData = {
-        slug: slug, // keep existing slug
-        hero: {
-          title: formData.title,
-          showSource: formData.showSource,
-          showPreview: formData.showPreview,
-          previewUrl: formData.previewUrl,
-          sourceUrl: formData.sourceUrl,
-          coverImage: formData.existingCoverImage, // backend will override if new file uploaded
-        },
-        overview: {
-          description: formData.overview,
-          duration: formData.duration,
-          categories: formData.categories,
-        },
-        problem: {
-          problem: formData.problem,
-          solution: formData.solution,
-          images: [formData.existingImage1, formData.existingImage2].filter(Boolean),
-        },
-        processes: [
-          { title: formData.process1, description: formData.process1description, images: [formData.existingProcess1image].filter(Boolean) },
-          { title: formData.process2, description: formData.process2description, images: [formData.existingProcess2image].filter(Boolean) },
-          { title: formData.process3, description: formData.process3description, images: [formData.existingProcess3image].filter(Boolean) },
-          { title: formData.process4, description: formData.process4description, images: [formData.existingProcess4image].filter(Boolean) },
-        ].filter((p) => p.title.trim()),
-        technologies: formData.technologies,
-        results: [
-          { title: formData.result1, description: formData.result1description, images: [formData.existingResult1image].filter(Boolean) },
-          { title: formData.result2, description: formData.result2description, images: [formData.existingResult2image].filter(Boolean) },
-          { title: formData.result3, description: formData.result3description, images: [formData.existingResult3image].filter(Boolean) },
-        ].filter((r) => r.title.trim()),
-        gallery: formData.existingGallery,
+        slug: meta.slug,
+        title: meta.title,
+        category: meta.category,
+        scope: meta.scope
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        duration: meta.duration,
+        coverImage: meta.existingCoverImage, // backend will override if new file
+        sections: sections.map((s, i) => ({ ...s, order: i })),
       };
 
       const fd = new FormData();
       fd.append("projectData", JSON.stringify(projectData));
-
-      // New files — backend only overrides existing URL when a new file is present
-      if (formData.coverImage) fd.append("coverImage", formData.coverImage);
-      if (formData.image1) fd.append("image1", formData.image1);
-      if (formData.image2) fd.append("image2", formData.image2);
-      for (let i = 1; i <= 4; i++) {
-        if (formData[`process${i}image`]) fd.append(`process${i}image`, formData[`process${i}image`]);
-      }
-      for (let i = 1; i <= 3; i++) {
-        if (formData[`result${i}image`]) fd.append(`result${i}image`, formData[`result${i}image`]);
-      }
-      // Gallery: new files are appended on top of existing ones in the backend
-      for (let i = 1; i <= 9; i++) {
-        if (formData[`gallery${i}`]) fd.append(`gallery${i}`, formData[`gallery${i}`]);
-      }
+      if (coverFile) fd.append("coverImage", coverFile);
+      Object.entries(blockFiles).forEach(([key, file]) => {
+        if (file) fd.append(key, file);
+      });
 
       await updateProject(projectId, fd);
       navigate("/admin");
@@ -178,6 +104,7 @@ export default function EditProject() {
     }
   };
 
+  // ── Loading/error states ──────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#e6e6e6]">
@@ -186,7 +113,7 @@ export default function EditProject() {
     );
   }
 
-  if (error && !formData) {
+  if (error && !meta) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#e6e6e6]">
         <p className="text-body text-red-500">{error}</p>
@@ -199,54 +126,139 @@ export default function EditProject() {
       <FormHero title="Edit Project" />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-1">
-        <ProjectHeroOverview
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+        {/* ── Fixed metadata ─────────────────────────────────────────────── */}
+        <section className="rounded-3xl bg-white p-10">
+          <h2 className="mb-6 text-lg font-semibold text-black-400">
+            Project Info
+          </h2>
 
-        <ProjectProblem
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+          <div className="grid gap-5 lg:grid-cols-2">
+            {/* Title */}
+            <div className="lg:col-span-2">
+              <label className={label}>Title *</label>
+              <input
+                required
+                name="title"
+                value={meta.title}
+                onChange={handleMeta}
+                className={input}
+              />
+            </div>
 
-        <ProjectProcess
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Slug */}
+            <div className="lg:col-span-2">
+              <label className={label}>Slug</label>
+              <input
+                name="slug"
+                value={meta.slug}
+                onChange={handleMeta}
+                className={`${input} font-mono text-xs`}
+              />
+            </div>
 
-        <ProjectTech
-          formData={formData}
-          setFormData={setFormData}
-        />
+            {/* Category */}
+            <div>
+              <label className={label}>Category</label>
+              <input
+                name="category"
+                value={meta.category}
+                onChange={handleMeta}
+                placeholder="e.g. Mobile App"
+                className={input}
+              />
+            </div>
 
-        <ProjectResult
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Duration */}
+            <div>
+              <label className={label}>Duration</label>
+              <input
+                name="duration"
+                value={meta.duration}
+                onChange={handleMeta}
+                placeholder="e.g. 2 Month"
+                className={input}
+              />
+            </div>
 
-        <ProjectGallery
-          formData={formData}
-          setFormData={setFormData}
-          handleChange={handleChange}
-        />
+            {/* Scope */}
+            <div className="lg:col-span-2">
+              <label className={label}>Scope (comma-separated)</label>
+              <input
+                name="scope"
+                value={meta.scope}
+                onChange={handleMeta}
+                className={input}
+              />
+              {meta.scope && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {meta.scope
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-grey-100 px-3 py-1 text-xs font-medium text-black-400/70"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                </div>
+              )}
+            </div>
 
-        {/* Submit area */}
-        <div className="flex flex-col items-end gap-4 rounded-3xl bg-white p-12">
-          {/* Existing image info */}
-          {formData?.existingCoverImage && (
-            <p className="text-body text-black-400/50 text-sm">
-              ℹ️ Leave image fields blank to keep existing images.
-            </p>
-          )}
+            {/* Cover image */}
+            <div className="lg:col-span-2">
+              <label className={label}>Cover Image</label>
+              {coverPreview && (
+                <img
+                  src={coverPreview}
+                  alt="Cover preview"
+                  className="mb-3 h-40 w-full rounded-2xl object-cover"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={coverRef}
+                className="hidden"
+                onChange={(e) => handleCoverFile(e.target.files[0])}
+              />
+              <button
+                type="button"
+                onClick={() => coverRef.current?.click()}
+                className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-3 text-sm text-black-400/60 transition hover:border-black-400/30 hover:text-black-400"
+              >
+                {meta.existingCoverImage ? "Replace cover image" : "Upload cover image"}
+              </button>
+              {meta.existingCoverImage && !coverFile && (
+                <p className="mt-1.5 text-xs text-black-400/40">
+                  Leave empty to keep current image.
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
 
-          {error && (
-            <p className="text-body text-red-500">{error}</p>
-          )}
+        {/* ── Sections ───────────────────────────────────────────────────── */}
+        <section className="rounded-3xl bg-white p-10">
+          <h2 className="mb-2 text-lg font-semibold text-black-400">
+            Content Sections
+          </h2>
+          <p className="mb-6 text-sm text-black-400/50">
+            Reorder, edit, add, or remove sections and their content blocks.
+          </p>
 
+          <SectionsEditor
+            sections={sections}
+            onChange={setSections}
+            onFile={handleBlockFile}
+          />
+        </section>
+
+        {/* ── Submit ─────────────────────────────────────────────────────── */}
+        <div className="flex flex-col items-end gap-4 rounded-3xl bg-white p-10">
+          {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-4">
             <Button
               type="button"
