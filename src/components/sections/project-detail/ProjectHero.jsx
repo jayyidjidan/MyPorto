@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import Button from "./Button"; // Adjust the import path as needed
+import Chip from "./Chip";     // Adjust the import path as needed
 
 export default function ProjectHero({ project }) {
   const navigate = useNavigate();
@@ -26,16 +28,16 @@ export default function ProjectHero({ project }) {
           }}
         />
 
-        {/* Back Home pill */}
+        {/* Back Home Button Component */}
         <div className="mb-10 lg:mb-14">
-          <button
-            type="button"
+          <Button
+            variant="primary"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:border-white/40"
+            className="text-sm font-medium"
           >
             <ArrowLeft size={14} strokeWidth={2} />
             Back Home
-          </button>
+          </Button>
         </div>
 
         {/* Project title */}
@@ -64,9 +66,7 @@ export default function ProjectHero({ project }) {
                   Category
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full border border-white/15 bg-white/10 px-5 py-2 text-sm font-medium text-white/90 backdrop-blur-sm">
-                    {category}
-                  </span>
+                  <Chip variant="small">{category}</Chip>
                 </div>
               </>
             )}
@@ -83,12 +83,7 @@ export default function ProjectHero({ project }) {
               </span>
               <div className="flex flex-wrap gap-2">
                 {scope.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-full border border-white/15 bg-white/10 px-5 py-2 text-sm font-medium text-white/90 backdrop-blur-sm"
-                  >
-                    {s}
-                  </span>
+                  <Chip key={s} variant="small">{s}</Chip>
                 ))}
               </div>
             </div>
