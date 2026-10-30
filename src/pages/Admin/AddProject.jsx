@@ -5,6 +5,7 @@ import FormHero from "../../components/sections/project-form/FormHero";
 import SectionsEditor from "../../components/Admin/SectionsEditor";
 import Button from "../../components/common/Button";
 import { createProject } from "../../api/projects";
+import { prepareSections } from "../../utils/projectForm";
 
 const input =
   "w-full rounded-xl border border-grey-100 bg-white px-4 py-2.5 text-sm text-black-400 outline-none transition focus:border-black-400/40 focus:ring-2 focus:ring-black-400/10";
@@ -15,9 +16,15 @@ const defaultMeta = {
   title: "",
   slug: "",
   category: "",
-  scope: "",   // comma-separated string → split on submit
+  scope: "", // comma-separated string → split on submit
   duration: "",
 };
+
+const slugify = (value) =>
+  value
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 export default function AddProject() {
   const navigate = useNavigate();
@@ -26,7 +33,7 @@ export default function AddProject() {
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [sections, setSections] = useState([]);
-  const [blockFiles, setBlockFiles] = useState({}); // { fileKey: File }
+  const [blockFiles, setBlockFiles] = useState({}); // { fid: File }
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -39,12 +46,7 @@ export default function AddProject() {
     setMeta((prev) => {
       const next = { ...prev, [name]: value };
       // Auto-generate slug from title
-      if (name === "title") {
-        next.slug = value
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-      }
+      if (name === "title") next.slug = slugify(value);
       return next;
     });
   };
@@ -55,20 +57,32 @@ export default function AddProject() {
     setCoverPreview(URL.createObjectURL(file));
   };
 
-  // Called by BlockEditor when a file is selected for a block image
-  const handleBlockFile = (fileKey, file) => {
-    setBlockFiles((prev) => ({ ...prev, [fileKey]: file }));
+  // Dipanggil BlockEditor saat file dipilih. Key = fid (ID stabil), bukan indeks.
+  const handleBlockFile = (fid, file) => {
+    setBlockFiles((prev) => ({ ...prev, [fid]: file }));
   };
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
 
+    if (sections.some((s) => !s.name.trim())) {
+      setError("Setiap section harus punya nama.");
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
+      // Bersihkan field khusus UI & susun key file sesuai urutan terakhir
+      const { sections: cleanSections, entries } = prepareSections(
+        sections,
+        blockFiles
+      );
+
       const projectData = {
-        slug: meta.slug || meta.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+        slug: meta.slug || slugify(meta.title),
         title: meta.title,
         category: meta.category,
         scope: meta.scope
@@ -77,17 +91,15 @@ export default function AddProject() {
           .filter(Boolean),
         duration: meta.duration,
         coverImage: "",
-        sections: sections.map((s, i) => ({ ...s, order: i })),
+        sections: cleanSections,
       };
 
       const fd = new FormData();
       fd.append("projectData", JSON.stringify(projectData));
       if (coverFile) fd.append("coverImage", coverFile);
 
-      // Block image files
-      Object.entries(blockFiles).forEach(([key, file]) => {
-        if (file) fd.append(key, file);
-      });
+      // Format key: s{sIdx}_b{bIdx}_img{iIdx}
+      entries.forEach(([key, file]) => fd.append(key, file));
 
       await createProject(fd);
       navigate("/admin");
@@ -221,7 +233,8 @@ export default function AddProject() {
             Content Sections
           </h2>
           <p className="mb-6 text-sm text-black-400/50">
-            Add sections and fill them with content blocks (text, images, carousels, grids, buttons).
+            Add sections and fill them with content blocks (text, images,
+            carousels, grids, buttons).
           </p>
 
           <SectionsEditor

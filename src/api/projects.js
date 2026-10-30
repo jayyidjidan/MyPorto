@@ -1,5 +1,7 @@
-const API =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Pastikan VITE_API_URL diakhiri "/api", contoh: https://api.domainkamu.com/api
+const API = (
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+).replace(/\/$/, "");
 
 /**
  * Returns the full URL for a stored image path.
@@ -12,49 +14,60 @@ export const getImageUrl = (path) => {
     return path;
   }
 
-  return `${API.replace("/api", "")}${path}`;
+  return `${API.replace(/\/api$/, "")}${path}`;
 };
 
-export async function getProjects() {
-  const res = await fetch(`${API}/projects`);
+/**
+ * Helper request: memastikan respons berupa JSON dan memberi pesan error jelas.
+ */
+async function request(path, options) {
+  let res;
+
+  try {
+    res = await fetch(`${API}${path}`, options);
+  } catch {
+    throw new Error(
+      `Tidak dapat terhubung ke server (${API}). Cek apakah backend berjalan dan VITE_API_URL benar.`
+    );
+  }
+
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    throw new Error(
+      `Server membalas ${res.status} dengan format bukan JSON (${res.url}). Cek VITE_API_URL dan route backend.`
+    );
+  }
 
   const data = await res.json();
 
-  if (!data.success) {
-    throw new Error(data.message);
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || `Request gagal (${res.status}).`);
   }
 
+  return data;
+}
+
+export async function getProjects() {
+  const data = await request("/projects");
   return data.data;
 }
 
 export async function getProjectBySlug(slug) {
-  const res = await fetch(`${API}/projects/${slug}`);
-
-  const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.message);
-  }
-
+  const data = await request(`/projects/${slug}`);
   return data.data;
 }
 
 /**
  * Create a new project.
  * @param {FormData} formData - Must contain 'projectData' (JSON string) + image files.
+ * Jangan set header Content-Type manual; browser mengisinya sendiri.
  */
 export async function createProject(formData) {
-  const res = await fetch(`${API}/projects`, {
+  const data = await request("/projects", {
     method: "POST",
     body: formData,
   });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.message);
-  }
-
   return data.data;
 }
 
@@ -64,30 +77,13 @@ export async function createProject(formData) {
  * @param {FormData} formData - Same structure as createProject.
  */
 export async function updateProject(id, formData) {
-  const res = await fetch(`${API}/projects/${id}`, {
+  const data = await request(`/projects/${id}`, {
     method: "PUT",
     body: formData,
   });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.message);
-  }
-
   return data.data;
 }
 
 export async function deleteProject(id) {
-  const res = await fetch(`${API}/projects/${id}`, {
-    method: "DELETE",
-  });
-
-  const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.message);
-  }
-
-  return data;
+  return request(`/projects/${id}`, { method: "DELETE" });
 }

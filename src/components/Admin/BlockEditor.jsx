@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import RichTextEditor from "./RichTextEditor";
+import { uid } from "../../utils/projectForm";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const label =
@@ -22,7 +23,7 @@ function FieldLabel({ children }) {
   return <label className={label}>{children}</label>;
 }
 
-// ── Individual block editors ──────────────────────────────────────────────────
+// ── Text ──────────────────────────────────────────────────────────────────────
 function TextBlockEditor({ block, onChange }) {
   return (
     <div>
@@ -35,15 +36,26 @@ function TextBlockEditor({ block, onChange }) {
   );
 }
 
-function ImageBlockEditor({ block, onChange, fileKey, onFile }) {
+// ── Single image ──────────────────────────────────────────────────────────────
+function ImageBlockEditor({ block, onChange, onFile }) {
   const ref = useRef();
+  const preview = block._preview || block.url;
+
+  const handlePick = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    onFile(block.fid, file);
+    onChange({ ...block, _preview: URL.createObjectURL(file) });
+    e.target.value = "";
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <div>
         <FieldLabel>Image</FieldLabel>
-        {block.url && (
+        {preview && (
           <img
-            src={block.url}
+            src={preview}
             alt={block.alt || ""}
             className="mb-2 h-24 w-auto rounded-xl object-cover"
           />
@@ -53,7 +65,7 @@ function ImageBlockEditor({ block, onChange, fileKey, onFile }) {
           accept="image/*"
           ref={ref}
           className="hidden"
-          onChange={(e) => onFile(fileKey, e.target.files[0])}
+          onChange={handlePick}
         />
         <button
           type="button"
@@ -61,7 +73,7 @@ function ImageBlockEditor({ block, onChange, fileKey, onFile }) {
           className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-2.5 text-sm text-black-400/60 transition hover:border-black-400/30 hover:text-black-400"
         >
           <ImageIcon size={14} />
-          {block.url ? "Replace image" : "Upload image"}
+          {preview ? "Replace image" : "Upload image"}
         </button>
       </div>
       <div>
@@ -77,105 +89,125 @@ function ImageBlockEditor({ block, onChange, fileKey, onFile }) {
   );
 }
 
-function CarouselBlockEditor({ block, onChange, sIdx, bIdx, onFile }) {
-  const images = block.images || [];
+// ── Satu slot gambar (komponen sendiri, jadi useRef aman dari aturan Hooks) ──
+function ImageSlot({ img, onPick, onAlt, onRemove }) {
+  const ref = useRef();
+  const preview = img._preview || img.url;
 
-  const addImage = () =>
-    onChange({ ...block, images: [...images, { url: "", alt: "" }] });
-
-  const removeImage = (i) =>
-    onChange({
-      ...block,
-      images: images.filter((_, idx) => idx !== i),
-    });
-
-  const updateImage = (i, field, value) => {
-    const updated = images.map((img, idx) =>
-      idx === i ? { ...img, [field]: value } : img
-    );
-    onChange({ ...block, images: updated });
+  const handlePick = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    onPick(file);
+    e.target.value = "";
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <FieldLabel>Carousel Images</FieldLabel>
-      {images.map((img, i) => {
-        const fileKey = `s${sIdx}_b${bIdx}_img${i}`;
-        const ref = useRef();
-        return (
-          <div
-            key={i}
-            className="flex items-start gap-3 rounded-xl border border-grey-100 bg-white/50 p-3"
-          >
-            {img.url && (
-              <img
-                src={img.url}
-                alt={img.alt || ""}
-                className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
-              />
-            )}
-            <div className="flex flex-1 flex-col gap-2">
-              <input
-                type="file"
-                accept="image/*"
-                ref={ref}
-                className="hidden"
-                onChange={(e) => onFile(fileKey, e.target.files[0])}
-              />
-              <button
-                type="button"
-                onClick={() => ref.current?.click()}
-                className="flex items-center gap-2 rounded-lg border border-dashed border-grey-100 px-3 py-1.5 text-xs text-black-400/60 hover:border-black-400/30"
-              >
-                <ImageIcon size={12} />
-                {img.url ? "Replace" : "Upload"}
-              </button>
-              <input
-                className={input}
-                placeholder="Alt text"
-                value={img.alt || ""}
-                onChange={(e) => updateImage(i, "alt", e.target.value)}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => removeImage(i)}
-              className="text-red-400 hover:text-red-600"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        );
-      })}
+    <div className="flex items-start gap-3 rounded-xl border border-grey-100 bg-white/50 p-3">
+      {preview && (
+        <img
+          src={preview}
+          alt={img.alt || ""}
+          className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+        />
+      )}
+      <div className="flex flex-1 flex-col gap-2">
+        <input
+          type="file"
+          accept="image/*"
+          ref={ref}
+          className="hidden"
+          onChange={handlePick}
+        />
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          className="flex items-center gap-2 rounded-lg border border-dashed border-grey-100 px-3 py-1.5 text-xs text-black-400/60 hover:border-black-400/30"
+        >
+          <ImageIcon size={12} />
+          {preview ? "Replace" : "Upload"}
+        </button>
+        <input
+          className={input}
+          placeholder="Alt text"
+          value={img.alt || ""}
+          onChange={(e) => onAlt(e.target.value)}
+        />
+      </div>
       <button
         type="button"
-        onClick={addImage}
-        className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-2 text-sm text-black-400/60 hover:border-black-400/30 hover:text-black-400"
+        onClick={onRemove}
+        className="text-red-400 hover:text-red-600"
       >
-        <Plus size={14} /> Add slide
+        <Trash2 size={14} />
       </button>
     </div>
   );
 }
 
-function GridBlockEditor({ block, onChange, sIdx, bIdx, onFile }) {
+// ── Daftar gambar (dipakai carousel & grid) ───────────────────────────────────
+function ImageListEditor({ block, onChange, onFile, heading, addLabel, children }) {
   const images = block.images || [];
 
+  const setImages = (next) => onChange({ ...block, images: next });
+
   const addImage = () =>
-    onChange({ ...block, images: [...images, { url: "", alt: "" }] });
+    setImages([...images, { fid: uid(), url: "", alt: "" }]);
 
-  const removeImage = (i) =>
-    onChange({ ...block, images: images.filter((_, idx) => idx !== i) });
+  const removeImage = (i) => setImages(images.filter((_, idx) => idx !== i));
 
-  const updateImage = (i, field, value) => {
-    const updated = images.map((img, idx) =>
-      idx === i ? { ...img, [field]: value } : img
-    );
-    onChange({ ...block, images: updated });
+  const patchImage = (i, patch) =>
+    setImages(images.map((img, idx) => (idx === i ? { ...img, ...patch } : img)));
+
+  const pickFile = (i, file) => {
+    onFile(images[i].fid, file);
+    patchImage(i, { _preview: URL.createObjectURL(file) });
   };
 
   return (
     <div className="flex flex-col gap-3">
+      {children}
+      <FieldLabel>{heading}</FieldLabel>
+      {images.map((img, i) => (
+        <ImageSlot
+          key={img.fid || i}
+          img={img}
+          onPick={(file) => pickFile(i, file)}
+          onAlt={(alt) => patchImage(i, { alt })}
+          onRemove={() => removeImage(i)}
+        />
+      ))}
+      <button
+        type="button"
+        onClick={addImage}
+        className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-2 text-sm text-black-400/60 hover:border-black-400/30 hover:text-black-400"
+      >
+        <Plus size={14} /> {addLabel}
+      </button>
+    </div>
+  );
+}
+
+function CarouselBlockEditor({ block, onChange, onFile }) {
+  return (
+    <ImageListEditor
+      block={block}
+      onChange={onChange}
+      onFile={onFile}
+      heading="Carousel Images"
+      addLabel="Add slide"
+    />
+  );
+}
+
+function GridBlockEditor({ block, onChange, onFile }) {
+  return (
+    <ImageListEditor
+      block={block}
+      onChange={onChange}
+      onFile={onFile}
+      heading="Grid Images"
+      addLabel="Add image"
+    >
       <div className="flex items-center gap-4">
         <div>
           <FieldLabel>Columns</FieldLabel>
@@ -191,66 +223,11 @@ function GridBlockEditor({ block, onChange, sIdx, bIdx, onFile }) {
           </select>
         </div>
       </div>
-      <FieldLabel>Grid Images</FieldLabel>
-      {images.map((img, i) => {
-        const fileKey = `s${sIdx}_b${bIdx}_img${i}`;
-        const ref = useRef();
-        return (
-          <div
-            key={i}
-            className="flex items-start gap-3 rounded-xl border border-grey-100 bg-white/50 p-3"
-          >
-            {img.url && (
-              <img
-                src={img.url}
-                alt={img.alt || ""}
-                className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
-              />
-            )}
-            <div className="flex flex-1 flex-col gap-2">
-              <input
-                type="file"
-                accept="image/*"
-                ref={ref}
-                className="hidden"
-                onChange={(e) => onFile(fileKey, e.target.files[0])}
-              />
-              <button
-                type="button"
-                onClick={() => ref.current?.click()}
-                className="flex items-center gap-2 rounded-lg border border-dashed border-grey-100 px-3 py-1.5 text-xs text-black-400/60 hover:border-black-400/30"
-              >
-                <ImageIcon size={12} />
-                {img.url ? "Replace" : "Upload"}
-              </button>
-              <input
-                className={input}
-                placeholder="Alt text"
-                value={img.alt || ""}
-                onChange={(e) => updateImage(i, "alt", e.target.value)}
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => removeImage(i)}
-              className="text-red-400 hover:text-red-600"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        );
-      })}
-      <button
-        type="button"
-        onClick={addImage}
-        className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-2 text-sm text-black-400/60 hover:border-black-400/30 hover:text-black-400"
-      >
-        <Plus size={14} /> Add image
-      </button>
-    </div>
+    </ImageListEditor>
   );
 }
 
+// ── Button ────────────────────────────────────────────────────────────────────
 function ButtonBlockEditor({ block, onChange }) {
   return (
     <div className="flex flex-col gap-3">
@@ -276,7 +253,7 @@ function ButtonBlockEditor({ block, onChange }) {
   );
 }
 
-// ── Block type icons / labels ─────────────────────────────────────────────────
+// ── Block types ───────────────────────────────────────────────────────────────
 const BLOCK_TYPES = [
   { type: "text", label: "Text", icon: Type },
   { type: "image", label: "Image", icon: ImageIcon },
@@ -286,7 +263,7 @@ const BLOCK_TYPES = [
 ];
 
 function newBlock(type) {
-  const base = { type };
+  const base = { type, fid: uid() };
   if (type === "text") return { ...base, content: "" };
   if (type === "image") return { ...base, url: "", alt: "" };
   if (type === "carousel") return { ...base, images: [] };
@@ -295,11 +272,12 @@ function newBlock(type) {
   return base;
 }
 
-// ── BlockEditor: manages blocks within one section ────────────────────────────
-export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
+// ── BlockEditor: mengelola block di dalam satu section ────────────────────────
+// Prop `sIdx` tidak lagi dipakai (key file dibuat saat submit), dibiarkan
+// diterima supaya SectionsEditor tidak perlu diubah.
+export default function BlockEditor({ blocks, onChange, onFile }) {
   const updateBlock = (bIdx, updated) => {
-    const next = blocks.map((b, i) => (i === bIdx ? updated : b));
-    onChange(next);
+    onChange(blocks.map((b, i) => (i === bIdx ? updated : b)));
   };
 
   const removeBlock = (bIdx) => {
@@ -321,12 +299,12 @@ export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
   return (
     <div className="flex flex-col gap-3">
       {blocks.map((block, bIdx) => {
-        const fileKey = `s${sIdx}_b${bIdx}_img0`;
-        const Icon = BLOCK_TYPES.find((t) => t.type === block.type)?.icon || Type;
+        const meta = BLOCK_TYPES.find((t) => t.type === block.type);
+        const Icon = meta?.icon || Type;
 
         return (
           <div
-            key={bIdx}
+            key={block.fid || bIdx}
             className="rounded-2xl border border-grey-100 bg-[#f8f8f8] p-4"
           >
             {/* Block header */}
@@ -334,7 +312,7 @@ export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
               <div className="flex items-center gap-2">
                 <Icon size={14} className="text-black-400/50" />
                 <span className="text-xs font-semibold uppercase tracking-wider text-black-400/50">
-                  {BLOCK_TYPES.find((t) => t.type === block.type)?.label}
+                  {meta?.label}
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -375,7 +353,6 @@ export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
               <ImageBlockEditor
                 block={block}
                 onChange={(b) => updateBlock(bIdx, b)}
-                fileKey={fileKey}
                 onFile={onFile}
               />
             )}
@@ -383,8 +360,6 @@ export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
               <CarouselBlockEditor
                 block={block}
                 onChange={(b) => updateBlock(bIdx, b)}
-                sIdx={sIdx}
-                bIdx={bIdx}
                 onFile={onFile}
               />
             )}
@@ -392,8 +367,6 @@ export default function BlockEditor({ sIdx, blocks, onChange, onFile }) {
               <GridBlockEditor
                 block={block}
                 onChange={(b) => updateBlock(bIdx, b)}
-                sIdx={sIdx}
-                bIdx={bIdx}
                 onFile={onFile}
               />
             )}
