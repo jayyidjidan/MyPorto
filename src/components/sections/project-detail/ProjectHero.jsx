@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import Button from "./Button"; // Adjust the import path as needed
-import Chip from "./Chip";     // Adjust the import path as needed
+import Button from "../../common/Button"; // Adjust the import path as needed
+import Chip from "../../common/Chip";     // Adjust the import path as needed
 
 export default function ProjectHero({ project }) {
   const navigate = useNavigate();
