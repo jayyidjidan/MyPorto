@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { getProjects, getImageUrl } from "../../api/projects";
 import ProjectCard from "../common/ProjectCard";
 
-const CACHE_KEY = "projects-cache-v1";
+// v2: bump so old-shaped cached data is ignored
+const CACHE_KEY = "projects-cache-v2";
 
 function readCache() {
   try {
@@ -30,6 +31,12 @@ function optimizeImage(url, width = 800) {
     return url;
   }
   return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
+}
+
+// coverImage is already a full URL; only use getImageUrl for relative paths
+function resolveImage(path) {
+  if (!path) return "";
+  return /^https?:\/\//.test(path) ? path : getImageUrl(path);
 }
 
 function ProjectSkeleton() {
@@ -61,8 +68,9 @@ export default function Project() {
     getProjects()
       .then((data) => {
         if (cancelled) return;
-        setProjects(data);
-        writeCache(data);
+        const list = Array.isArray(data) ? data : data?.projects ?? [];
+        setProjects(list);
+        writeCache(list);
         setError(false);
       })
       .catch((err) => {
@@ -161,11 +169,9 @@ export default function Project() {
                 }}
               >
                 <ProjectCard
-                  title={project.hero?.title}
-                  tags={(project.overview?.categories || []).map(
-                    (c) => `#${c}`
-                  )}
-                  image={optimizeImage(getImageUrl(project.hero?.coverImage))}
+                  title={project.title}
+                  tags={project.category ? [`#${project.category}`] : []}
+                  image={optimizeImage(resolveImage(project.coverImage))}
                   href={`/projects/${project.slug}`}
                 />
               </div>
