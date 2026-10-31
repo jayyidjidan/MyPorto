@@ -5,7 +5,7 @@ import FormHero from "../../components/sections/project-form/FormHero";
 import SectionsEditor from "../../components/Admin/SectionsEditor";
 import Button from "../../components/common/Button";
 import { getProjectBySlug, updateProject } from "../../api/projects";
-import { prepareSections } from "../../utils/projectForm";
+import { prepareSections, ensureFids } from "../../utils/projectForm";
 
 const input =
   "w-full rounded-xl border border-grey-100 bg-white px-4 py-2.5 text-sm text-black-400 outline-none transition focus:border-black-400/40 focus:ring-2 focus:ring-black-400/10";
@@ -49,11 +49,13 @@ export default function EditProject() {
           existingCoverImage: project.coverImage || "",
         });
         setCoverPreview(project.coverImage || "");
-        setSections(
-          [...(project.sections || [])].sort(
-            (a, b) => (a.order ?? 0) - (b.order ?? 0)
-          )
+
+        const sorted = [...(project.sections || [])].sort(
+          (a, b) => (a.order ?? 0) - (b.order ?? 0)
         );
+        // Give every loaded block / image its own fid so each replaced file
+        // is stored under a unique key (fixes "all images become the last one")
+        setSections(ensureFids(sorted));
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
