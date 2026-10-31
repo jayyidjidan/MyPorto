@@ -3,11 +3,12 @@ import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import DOMPurify from "dompurify";
 
 // ── Text block ────────────────────────────────────────────────────────────────
+// Text keeps a readable line length; images inside rich text get rounded too.
 function TextBlock({ block }) {
   const clean = DOMPurify.sanitize(block.content || "");
   return (
     <div
-      className="tiptap-content"
+      className="tiptap-content max-w-4xl [&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl"
       dangerouslySetInnerHTML={{ __html: clean }}
     />
   );
@@ -17,11 +18,11 @@ function TextBlock({ block }) {
 function ImageBlock({ block }) {
   if (!block.url) return null;
   return (
-    <figure className="w-full">
+    <figure className="w-full overflow-hidden rounded-3xl">
       <img
         src={block.url}
         alt={block.alt || ""}
-        className="w-full rounded-2xl object-cover"
+        className="h-auto w-full object-cover"
         loading="lazy"
       />
     </figure>
@@ -40,11 +41,11 @@ function CarouselBlock({ block }) {
   const next = () => setCurrent((c) => (c + 1) % images.length);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl">
+    <div className="relative w-full overflow-hidden rounded-3xl">
       <img
         src={images[current]?.url}
         alt={images[current]?.alt || `Slide ${current + 1}`}
-        className="w-full object-cover transition-opacity duration-300"
+        className="h-auto w-full object-cover transition-opacity duration-300"
         loading="lazy"
       />
 
@@ -54,7 +55,7 @@ function CarouselBlock({ block }) {
             type="button"
             onClick={prev}
             aria-label="Previous slide"
-            className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
           >
             <ChevronLeft size={18} />
           </button>
@@ -62,7 +63,7 @@ function CarouselBlock({ block }) {
             type="button"
             onClick={next}
             aria-label="Next slide"
-            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition hover:bg-black/70"
           >
             <ChevronRight size={18} />
           </button>
@@ -77,7 +78,7 @@ function CarouselBlock({ block }) {
                 onClick={() => setCurrent(i)}
                 className={`h-2 w-2 rounded-full transition-all ${
                   i === current
-                    ? "bg-white scale-125"
+                    ? "scale-125 bg-white"
                     : "bg-white/50 hover:bg-white/80"
                 }`}
               />
@@ -103,11 +104,11 @@ function GridBlock({ block }) {
       }`}
     >
       {images.map((img, i) => (
-        <figure key={i} className="overflow-hidden rounded-2xl">
+        <figure key={i} className="overflow-hidden rounded-3xl">
           <img
             src={img.url}
             alt={img.alt || `Image ${i + 1}`}
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover"
             loading="lazy"
           />
         </figure>

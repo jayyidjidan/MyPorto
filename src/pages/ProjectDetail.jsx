@@ -48,23 +48,23 @@ export default function ProjectDetail() {
       </header>
 
       <main>
-        {/* Dark hero header */}
+        {/* Dark hero header — stays full width */}
         <ProjectHero project={project} />
 
-        {/* Cover image (if set) */}
+        {/* Cover image (if set) — capped at 1440px, centered, rounded */}
         {project.coverImage && (
-          <div className="px-4 pb-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1440px] px-4 pb-6 lg:px-8">
             <img
               src={project.coverImage}
               alt={project.title}
-              className="w-full rounded-3xl object-cover"
+              className="h-auto w-full rounded-3xl object-cover"
               style={{ maxHeight: "560px" }}
               loading="lazy"
             />
           </div>
         )}
 
-        {/* Dynamic sections */}
+        {/* Dynamic sections (each capped at 1440px inside SectionRenderer) */}
         {sections.map((section) => (
           <SectionRenderer key={section.id || section._id} section={section} />
         ))}
