@@ -8,7 +8,7 @@ function TextBlock({ block }) {
   const clean = DOMPurify.sanitize(block.content || "");
   return (
     <div
-      className="tiptap-content max-w-full [&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl"
+      className="tiptap-content max-w-4xl [&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl"
       dangerouslySetInnerHTML={{ __html: clean }}
     />
   );

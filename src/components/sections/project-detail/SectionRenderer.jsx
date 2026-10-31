@@ -6,7 +6,7 @@ export default function SectionRenderer({ section }) {
   const { name, blocks = [] } = section;
 
   return (
-    <section className="w-full px-4 py-8 lg:px-8 lg:py-12">
+    <section className="items-center justify-center w-full px-4 py-8 lg:px-8 lg:py-12">
       <div className="mx-auto w-full max-w-[1440px]">
         {/* Section name */}
         {name && (
