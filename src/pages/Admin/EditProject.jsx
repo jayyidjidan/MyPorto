@@ -5,11 +5,18 @@ import FormHero from "../../components/sections/project-form/FormHero";
 import SectionsEditor from "../../components/Admin/SectionsEditor";
 import Button from "../../components/common/Button";
 import { getProjectBySlug, updateProject } from "../../api/projects";
+import { prepareSections } from "../../utils/projectForm";
 
 const input =
   "w-full rounded-xl border border-grey-100 bg-white px-4 py-2.5 text-sm text-black-400 outline-none transition focus:border-black-400/40 focus:ring-2 focus:ring-black-400/10";
 const label =
   "block text-xs font-semibold uppercase tracking-wider text-black-400/50 mb-1";
+
+const slugify = (value) =>
+  value
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 export default function EditProject() {
   const navigate = useNavigate();
@@ -20,7 +27,7 @@ export default function EditProject() {
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [sections, setSections] = useState([]);
-  const [blockFiles, setBlockFiles] = useState({});
+  const [blockFiles, setBlockFiles] = useState({}); // { fid: File }
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -64,19 +71,32 @@ export default function EditProject() {
     setCoverPreview(URL.createObjectURL(file));
   };
 
-  const handleBlockFile = (fileKey, file) => {
-    setBlockFiles((prev) => ({ ...prev, [fileKey]: file }));
+  // Dipanggil BlockEditor saat file dipilih. Key = fid (ID stabil), bukan indeks.
+  const handleBlockFile = (fid, file) => {
+    setBlockFiles((prev) => ({ ...prev, [fid]: file }));
   };
 
   // ── Submit ────────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
 
+    if (sections.some((s) => !s.name?.trim())) {
+      setError("Setiap section harus punya nama.");
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
+      // Bersihkan field khusus UI & susun key file sesuai urutan terakhir
+      const { sections: cleanSections, entries } = prepareSections(
+        sections,
+        blockFiles
+      );
+
       const projectData = {
-        slug: meta.slug,
+        slug: meta.slug || slugify(meta.title),
         title: meta.title,
         category: meta.category,
         scope: meta.scope
@@ -84,16 +104,16 @@ export default function EditProject() {
           .map((s) => s.trim())
           .filter(Boolean),
         duration: meta.duration,
-        coverImage: meta.existingCoverImage, // backend will override if new file
-        sections: sections.map((s, i) => ({ ...s, order: i })),
+        coverImage: meta.existingCoverImage, // backend overrides if a new file is sent
+        sections: cleanSections,
       };
 
       const fd = new FormData();
       fd.append("projectData", JSON.stringify(projectData));
       if (coverFile) fd.append("coverImage", coverFile);
-      Object.entries(blockFiles).forEach(([key, file]) => {
-        if (file) fd.append(key, file);
-      });
+
+      // Format key: s{sIdx}_b{bIdx}_img{iIdx}
+      entries.forEach(([key, file]) => fd.append(key, file));
 
       await updateProject(projectId, fd);
       navigate("/admin");
@@ -187,6 +207,7 @@ export default function EditProject() {
                 name="scope"
                 value={meta.scope}
                 onChange={handleMeta}
+                placeholder="UX Research, UI Design, Prototype"
                 className={input}
               />
               {meta.scope && (
@@ -229,7 +250,9 @@ export default function EditProject() {
                 onClick={() => coverRef.current?.click()}
                 className="flex items-center gap-2 rounded-xl border border-dashed border-grey-100 px-4 py-3 text-sm text-black-400/60 transition hover:border-black-400/30 hover:text-black-400"
               >
-                {meta.existingCoverImage ? "Replace cover image" : "Upload cover image"}
+                {meta.existingCoverImage || coverFile
+                  ? "Replace cover image"
+                  : "Upload cover image"}
               </button>
               {meta.existingCoverImage && !coverFile && (
                 <p className="mt-1.5 text-xs text-black-400/40">
