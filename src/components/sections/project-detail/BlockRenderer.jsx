@@ -8,7 +8,7 @@ import DOMPurify from "dompurify";
 // right-aligned -> pushed to the right edge, centered -> centered.
 const TEXT_BLOCK_CLASSES = [
   "tiptap-content w-full",
-  "[&>*]:max-w-[720px]",
+  "[&>*]:max-w-[840px]",
   "[&>[style*='right']]:ml-auto",
   "[&>[style*='center']]:mx-auto",
   "[&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl",

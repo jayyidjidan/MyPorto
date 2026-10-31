@@ -8,19 +8,21 @@ export default function SectionRenderer({ section }) {
   return (
     <section className="w-full px-4 py-8 lg:px-8 lg:py-12">
       <div className="mx-auto w-full max-w-[1440px]">
-        {/* Section name */}
+        {/* Section name — dark rounded banner */}
         {name && (
-          <h2
-            className="mb-8 text-left font-semibold text-black-400"
-            style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: "clamp(24px, 3vw, 36px)",
-              letterSpacing: "-0.02em",
-              lineHeight: "1.2",
-            }}
-          >
-            {name}
-          </h2>
+          <div className="mb-10 flex w-full items-center justify-center rounded-[28px] bg-black-gradient-2 px-6 py-8 lg:mb-16 lg:rounded-[40px] lg:py-12">
+            <h2
+              className="text-center font-medium text-white"
+              style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: "clamp(32px, 5vw, 68px)",
+                letterSpacing: "-0.04em",
+                lineHeight: "1.1",
+              }}
+            >
+              {name}
+            </h2>
+          </div>
         )}
 
         {/* Blocks */}
