@@ -3,12 +3,22 @@ import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import DOMPurify from "dompurify";
 
 // ── Text block ────────────────────────────────────────────────────────────────
-// Text keeps a readable line length; images inside rich text get rounded too.
+// The block itself is full width. Each child (p, h2, h3, ul, ol) is capped at
+// 720px, and the editor's text-align decides where that 720px column sits:
+// right-aligned -> pushed to the right edge, centered -> centered.
+const TEXT_BLOCK_CLASSES = [
+  "tiptap-content w-full",
+  "[&>*]:max-w-[720px]",
+  "[&>[style*='right']]:ml-auto",
+  "[&>[style*='center']]:mx-auto",
+  "[&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl",
+].join(" ");
+
 function TextBlock({ block }) {
   const clean = DOMPurify.sanitize(block.content || "");
   return (
     <div
-      className="tiptap-content max-w-full [&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl"
+      className={TEXT_BLOCK_CLASSES}
       dangerouslySetInnerHTML={{ __html: clean }}
     />
   );
