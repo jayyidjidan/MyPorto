@@ -51,21 +51,21 @@ const COLUMNS = [
       id: "g1",
       image: "/assets/Gallery%202.webp",
       alt: "Design shot 1",
-      href: "https://example.com/shot-1",
+      href: "#",
       height: "h-[200px] lg:h-[253px]",
     },
     {
       id: "g2",
       image: "/assets/Gallery%201.webp",
       alt: "Design shot 2",
-      href: "https://example.com/shot-2",
+      href: "https://dribbble.com/shots/26617823-Solara-Solar-Energy-Website-Design",
       height: "h-[280px] lg:h-[561px]",
     },
     {
       id: "g3",
       image: "/assets/Gallery%203.webp",
       alt: "Design shot 3",
-      href: "https://example.com/shot-3",
+      href: "https://grand1vista.framer.website/",
       height: "h-[220px] lg:h-[431px]",
     },
   ],
@@ -75,21 +75,21 @@ const COLUMNS = [
       id: "g4",
       image: "/assets/Gallery%204.webp",
       alt: "Design shot 4",
-      href: "https://example.com/shot-4",
+      href: "https://dribbble.com/shots/27011833-Velvet-Blue-Luxury-Cruise-Website",
       height: "h-[260px] lg:h-[503.567px]",
     },
     {
       id: "g5",
       image: "/assets/Gallery%205.webp",
       alt: "Design shot 5",
-      href: "https://example.com/shot-5",
+      href: "https://dribbble.com/shots/26811211-Finture-Smart-Furniture-Customization-App",
       height: "h-[260px] lg:h-[503.567px]",
     },
     {
       id: "g6",
       image: "/assets/Gallery%206.webp",
       alt: "Design shot 6",
-      href: "https://example.com/shot-6",
+      href: "https://dribbble.com/shots/26699544-Fluensify-Influencer-Data-Driven-Dashboard",
       height: "h-[200px] lg:h-[389px]",
     },
   ],
@@ -99,21 +99,21 @@ const COLUMNS = [
       id: "g7",
       image: "/assets/Gallery%207.webp",
       alt: "Design shot 7",
-      href: "https://example.com/shot-7",
+      href: "https://dribbble.com/shots/27102342-Auxio-Modern-Smartwatch-Website",
       height: "h-[220px] lg:h-[431px]",
     },
     {
       id: "g8",
       image: "/assets/Gallery%208.webp",
       alt: "Design shot 8",
-      href: "https://example.com/shot-8",
+      href: "#",
       height: "h-[200px] lg:h-[253px]",
     },
     {
       id: "g9",
       image: "/assets/Gallery%202.webp",
       alt: "Design shot 9",
-      href: "https://example.com/shot-9",
+      href: "#",
       height: "h-[280px] lg:h-[561px]",
     },
   ],
@@ -167,7 +167,7 @@ export default function Gallery() {
             </p>
 
             <h1 className="w-[250px] text-center text-h1 text-gradient-black-1 lg:w-[350px]">
-              My Design Shot Exploration
+              My Design Exploration
             </h1>
           </div>
 

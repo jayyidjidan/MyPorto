@@ -43,8 +43,8 @@ export default function Hero() {
             animate-fade-in delay-400
           "
         >
-          <Button variant="primary">See More</Button>
-          <Button variant="secondary">Download CV</Button>
+          <a href="https://www.behance.net/gallery/256941555/Jayyid-UIUX-Portofolio"> <Button variant="Primary">See Porto.pdf</Button></a>
+          <a href="https://drive.google.com/uc?export=download&id=1xUvosB-4Woj8k3EvW1xEzSfL5veQlJYh&utm_source=chatgpt.com"> <Button variant="secondary">Download CV</Button></a>
         </div>
       </div>
 
