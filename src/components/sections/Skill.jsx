@@ -93,40 +93,6 @@ export default function Skill() {
           </div>
         </AnimatedItem>
 
-
-        {/* Skill 2 */}
-        <AnimatedItem
-          className="flex w-full flex-col items-end justify-between gap-6 self-stretch border-b border-[#c9c9c9] py-12 lg:flex-row lg:items-center lg:gap-0"
-          delay={0}
-        >
-          <div className="flex w-full items-start gap-4">
-            <h4 className="text-h4">2</h4>
-
-            <h1 className="text-h1">
-              Backend
-            </h1>
-          </div>
-
-          <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
-            <Chip variant="medium">
-              Laravel
-            </Chip>
-
-            <Chip variant="medium">
-              Expressjs
-            </Chip>
-
-            <Chip variant="medium">
-              Nodejs
-            </Chip>
-
-            <Chip variant="medium">
-              Python
-            </Chip>
-          </div>
-        </AnimatedItem>
-
-
         {/* Skill 3 */}
         <AnimatedItem
           className="flex w-full flex-col items-end justify-between gap-6 self-stretch py-12 lg:flex-row lg:items-center lg:gap-0"

@@ -172,7 +172,7 @@ export default function Gallery() {
           </div>
 
           <Button variant="primary">
-            See All
+            <a href="https://dribbble.com/jayyidjidan">See All</a>
           </Button>
         </div>
       </AnimatedItem>

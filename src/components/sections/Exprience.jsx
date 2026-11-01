@@ -234,7 +234,7 @@ export default function Experience() {
       {/* Button */}
       <AnimatedItem delay={200}>
         <Button variant="secondary">
-          Know More
+          <a href="https://www.linkedin.com/in/jayyidjidan14/">Know More</a>
         </Button>
       </AnimatedItem>
 

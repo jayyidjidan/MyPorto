@@ -103,7 +103,7 @@ export default function About() {
           </AnimatedItem>
 
           <AnimatedItem delay={300}>
-            <Button variant="primary">See All</Button>
+            <Button variant="primary"><a href="https://www.linkedin.com/in/jayyidjidan14/">See All</a></Button>
           </AnimatedItem>
         </div>
 

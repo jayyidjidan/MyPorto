@@ -23,6 +23,13 @@ const certificates = [
     image: "/assets/studio.png", // ganti dengan gambar sertifikat Coding Studio
     credentialUrl: "https://member.codingstudio.id/certificate/Ms4LS6qZo5",
   },
+  {
+    id: 4,
+    title: "Fundamental UI/UX",
+    issuer: "Coursera",
+    image: "/assets/coursera.jpeg", 
+    credentialUrl: "https://www.coursera.org/account/accomplishments/certificate/P4WJ2K1PTFIW",
+  },
 ];
 
 function AnimatedItem({ children, className = "", delay = 0 }) {
