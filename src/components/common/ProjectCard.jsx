@@ -1,11 +1,21 @@
 import Button from "./Button";
 import Chip from "./Chip";
 import { Link } from "react-router-dom";
+import { prefetchProject } from "../../utils/projectCache";
 
 export default function ProjectCard({ title, tags = [], image, href = "#" }) {
+  // href looks like "/projects/finture" -> slug "finture"
+  const slug = href.startsWith("/projects/")
+    ? href.replace("/projects/", "")
+    : null;
+  const prefetch = () => prefetchProject(slug);
+
   return (
     <Link
       to={href}
+      onMouseEnter={prefetch}
+      onFocus={prefetch}
+      onTouchStart={prefetch}
       className="group flex h-full w-full flex-col items-start justify-between gap-8 py-8 opacity-50 transition-opacity duration-300 hover:opacity-100 lg:gap-12"
     >
       <div className="flex w-full flex-col gap-6">

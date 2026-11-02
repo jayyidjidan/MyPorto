@@ -1,45 +1,60 @@
-import Button from "./Button";
-import Chip from "./Chip";
-import { Link } from "react-router-dom";
-import { prefetchProject } from "../../utils/projectCache";
+import Button from "../common/Button";
+import { getImageUrl } from "../../api/projects";
+import { generateProjectPDF } from "../../utils/generateProjectPDF";
 
-export default function ProjectCard({ title, tags = [], image, href = "#" }) {
-  // href looks like "/projects/finture" -> slug "finture"
-  const slug = href.startsWith("/projects/")
-    ? href.replace("/projects/", "")
-    : null;
-  const prefetch = () => prefetchProject(slug);
+export default function ProjectCard({
+  id,
+  project,
+  title,
+  createdAt,
+  thumbnail,
+  onEdit,
+  onDelete,
+}) {
+  const handleDelete = () => {
+    if (window.confirm(`Delete "${title}"? This cannot be undone.`)) {
+      onDelete(id);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (project) {
+      generateProjectPDF(project);
+    }
+  };
 
   return (
-    <Link
-      to={href}
-      onMouseEnter={prefetch}
-      onFocus={prefetch}
-      onTouchStart={prefetch}
-      className="group flex h-full w-full flex-col items-start justify-between gap-8 py-8 opacity-50 transition-opacity duration-300 hover:opacity-100 lg:gap-12"
-    >
-      <div className="flex w-full flex-col gap-6">
-        <div className="flex w-full flex-col items-start gap-2">
-          <h2 className="text-h2">{title}</h2>
-        </div>
-
-        {/* flex-wrap: chip tidak lagi dipaksa menyusut, jadi teksnya tidak pecah jadi 2 baris */}
-        <div className="flex flex-wrap items-start gap-1 [&>*]:whitespace-nowrap">
-          {tags.map((tag) => (
-            <Chip key={tag}>{tag}</Chip>
-          ))}
-        </div>
-      </div>
-
-      {/* aspect ratio instead of fixed height: image always fills the card */}
+    <div className="flex h-[322px] w-[422px] flex-col rounded-3xl border border-[#B1B1B1]/70 bg-[#fafafa] overflow-hidden">
       <div
-        className="flex aspect-[16/10] w-full items-center justify-center rounded-4xl bg-cover bg-center"
-        style={{ backgroundImage: `url(${image})` }}
+        className="h-full w-full rounded-3xl bg-cover bg-center"
+        style={{
+          backgroundImage: thumbnail
+            ? `url(${getImageUrl(thumbnail)})`
+            : "linear-gradient(to bottom, #d9d9d9, #bfbfbf)",
+        }}
       >
-        <div className="opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <Button variant="primary">View Project</Button>
+        <div className="flex h-full w-full items-start justify-end gap-2 p-6">
+          <Button variant="secondary" onClick={handleDownloadPDF}>
+            PDF
+          </Button>
+          <Button variant="secondary" onClick={handleDelete}>
+            Delete
+          </Button>
+          <Button variant="primary" onClick={() => onEdit(id)}>
+            Edit
+          </Button>
         </div>
       </div>
-    </Link>
+
+      <div className="flex w-full items-center justify-between p-6">
+        <h3 className="text-h3 text-black-400">{title}</h3>
+
+        <p className="text-right text-p text-black-400/50">
+          Created At
+          <br />
+          {createdAt}
+        </p>
+      </div>
+    </div>
   );
 }
