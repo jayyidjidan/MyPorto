@@ -19,10 +19,10 @@ export default function Home() {
       <Hero />
       <About />
       <Project />
-      <Skill />
-      <Certif />
-      <Exprience />
       <Gallery />
+      <Skill />
+      <Exprience />
+      <Certif />
       <Contact />
       <Footer />
     </>
