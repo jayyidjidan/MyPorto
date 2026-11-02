@@ -118,6 +118,10 @@ export default function Skill() {
             <Chip variant="medium">
               Micro Interaction
             </Chip>
+
+            <Chip variant="medium">
+              Protyping
+            </Chip>
           </div>
         </AnimatedItem>
 
@@ -137,6 +141,14 @@ export default function Skill() {
           <div className="flex flex-col items-end gap-2 lg:flex-row lg:items-start">
             <Chip variant="medium">
               User Research
+            </Chip>
+
+            <Chip variant="medium">
+              AI Workflow
+            </Chip>
+
+            <Chip variant="medium">
+              UCD
             </Chip>
 
             <Chip variant="medium">
