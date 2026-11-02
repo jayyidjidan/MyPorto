@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import DOMPurify from "dompurify";
+import { optimizeImage, srcSetFor } from "../../../utils/image";
+
+// Content is capped at 1440px with 32px side padding -> 1376px max image width
+const FULL_SIZES = "(min-width: 1440px) 1376px, 100vw";
 
 // ── Text block ────────────────────────────────────────────────────────────────
 // The block itself is full width. Each child (p, h2, h3, ul, ol) is capped at
@@ -8,7 +12,7 @@ import DOMPurify from "dompurify";
 // right-aligned -> pushed to the right edge, centered -> centered.
 const TEXT_BLOCK_CLASSES = [
   "tiptap-content w-full",
-  "[&>*]:max-w-[840px]",
+  "[&>*]:max-w-[720px]",
   "[&>[style*='right']]:ml-auto",
   "[&>[style*='center']]:mx-auto",
   "[&_img]:my-4 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl",
@@ -30,10 +34,13 @@ function ImageBlock({ block }) {
   return (
     <figure className="w-full overflow-hidden rounded-3xl">
       <img
-        src={block.url}
+        src={optimizeImage(block.url, 1440)}
+        srcSet={srcSetFor(block.url)}
+        sizes={FULL_SIZES}
         alt={block.alt || ""}
         className="h-auto w-full object-cover"
         loading="lazy"
+        decoding="async"
       />
     </figure>
   );
@@ -44,6 +51,17 @@ function CarouselBlock({ block }) {
   const images = block.images || [];
   const [current, setCurrent] = useState(0);
 
+  // Preload the next slide so clicking "next" feels instant.
+  // Uses the same fixed width as the displayed <img> so the cache is hit.
+  useEffect(() => {
+    if (images.length < 2) return;
+    const nextUrl = images[(current + 1) % images.length]?.url;
+    if (nextUrl) {
+      const preload = new Image();
+      preload.src = optimizeImage(nextUrl, 1440);
+    }
+  }, [current, images]);
+
   if (images.length === 0) return null;
 
   const prev = () =>
@@ -53,10 +71,11 @@ function CarouselBlock({ block }) {
   return (
     <div className="relative w-full overflow-hidden rounded-3xl">
       <img
-        src={images[current]?.url}
+        src={optimizeImage(images[current]?.url, 1440)}
         alt={images[current]?.alt || `Slide ${current + 1}`}
         className="h-auto w-full object-cover transition-opacity duration-300"
         loading="lazy"
+        decoding="async"
       />
 
       {images.length > 1 && (
@@ -107,6 +126,12 @@ function GridBlock({ block }) {
 
   if (images.length === 0) return null;
 
+  // Tell the browser how wide each grid image really is
+  const sizes =
+    cols === 3
+      ? "(min-width: 1024px) 33vw, 50vw"
+      : "(min-width: 1024px) 50vw, 100vw";
+
   return (
     <div
       className={`grid gap-3 ${
@@ -116,10 +141,13 @@ function GridBlock({ block }) {
       {images.map((img, i) => (
         <figure key={i} className="overflow-hidden rounded-3xl">
           <img
-            src={img.url}
+            src={optimizeImage(img.url, 960)}
+            srcSet={srcSetFor(img.url, [480, 720, 960, 1440])}
+            sizes={sizes}
             alt={img.alt || `Image ${i + 1}`}
             className="h-full w-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         </figure>
       ))}
