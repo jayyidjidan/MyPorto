@@ -260,7 +260,7 @@ body {
   letter-spacing: -0.01em;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
-  color: var(--color-black-400);
+  color: color-mix(in srgb, var(--color-black-400) 70%, transparent);
 }
 
 .tiptap-content p {
